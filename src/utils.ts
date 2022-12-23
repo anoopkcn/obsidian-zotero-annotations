@@ -862,31 +862,6 @@ export function replaceTagList(
     return metadata;
 }
 
-export function openSelectedNote(
-    selectedEntry: Reference,
-    exportTitle: string,
-    exportPath: string
-) {
-    const noteTitleFull = createNoteTitle(
-        selectedEntry,
-        exportTitle,
-        exportPath
-        //this.zoteroBuildWindows
-    );
-
-    //remove from the path of the note to be exported the path of the vault
-    const noteTitleShort = noteTitleFull.replace(
-        normalizePath(this.app.vault.adapter.getBasePath()) + "/",
-        ""
-    );
-
-    //Find the TFile
-    const myFile = this.app.vault.getAbstractFileByPath(noteTitleShort);
-
-    //Open the Note ina new leaf
-    this.app.workspace.getUnpinnedLeaf().openFile(myFile);
-}
-
 export function zoteroAppInfo(selectedEntry: Reference, settings: MyPluginSettings) {
 
     //Check the path to the data folder
@@ -1185,7 +1160,7 @@ export function compareOldNewNote(
 }
 
 
-export async function createNote(selectedEntry: Reference, settings: MyPluginSettings) {
+export async function createNote(selectedEntry: Reference, settings: MyPluginSettings): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
     const authorKey = createAuthorKey(selectedEntry.creators);
     // set the authorkey field (with or without first name) on the 
@@ -1203,9 +1178,6 @@ export async function createNote(selectedEntry: Reference, settings: MyPluginSet
 
     // Create the metadata
     let litnote: string = parseMetadata(selectedEntry, settings, templateNote);
-
-    // Extract the list of collections
-    // litnote = parseCollection(selectedEntry, data, litnote);
 
     // Define the name and full path of the file to be exported
     const noteTitleFull = createNoteTitle(
@@ -1272,11 +1244,13 @@ export async function createNote(selectedEntry: Reference, settings: MyPluginSet
             settings
         );
     }
-
-    fs.writeFile(noteTitleFull, litnote, function (err) {
-        if (err) console.log(err);
+    fs.writeFile(noteTitleFull, litnote, err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        new Notice(`Imported ${selectedEntry.citationKey}`);
     });
-    new Notice(`Imported ${selectedEntry.citationKey}!`);
 }
 
 
@@ -1352,3 +1326,9 @@ export function updateLibrary(settings: MyPluginSettings) {
     //Update the date when the update was last done
     settings.lastUpdateDate = new Date();
 };
+
+export function openNoteAfterImport(file: TFile, isOpen: boolean) {
+    if (isOpen) {
+        this.app.workspace.getLeaf(false).openFile(file);
+    }
+}

@@ -5,6 +5,7 @@ import {
     FuzzySuggestModal,
     Notice,
     Platform,
+    normalizePath,
 } from "obsidian";
 
 import { Reference, AnnotationElements } from "./types";
@@ -12,7 +13,8 @@ import { Reference, AnnotationElements } from "./types";
 import {
     createAuthorKeyFullName,
     createNote,
-    openSelectedNote,
+    createNoteTitle,
+    openNoteAfterImport,
     orderByDateModified,
 } from "./utils";
 
@@ -152,16 +154,22 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
                 this.data.items[indexSelectedReference];
 
             //Create and export Note for select reference
-            createNote(selectedEntry, this.plugin.settings);
+            createNote(selectedEntry, this.plugin.settings)
 
-            //if the note is the last one to be processed, then open it
-            if (indexNoteToBeProcessed == citeKeyToBeProcessed.length - 1) {
-                openSelectedNote(
-                    selectedEntry,
-                    this.plugin.settings.exportTitle,
-                    this.plugin.settings.exportPath
-                );
-            }
+            //open note  after import
+            const noteTitleFull = createNoteTitle(
+                selectedEntry,
+                this.plugin.settings.exportTitle,
+                this.plugin.settings.exportPath
+            );
+            const noteTitleShort = noteTitleFull.replace(
+                //@ts-ignore
+                normalizePath(this.app.vault.adapter.getBasePath()) + "/",
+                ""
+            );
+            // console.log(noteTitleShort)
+            const myFile = this.app.metadataCache.getFirstLinkpathDest(normalizePath(noteTitleShort), "")
+            openNoteAfterImport(myFile, this.plugin.settings.openAfterImport)
         }
     }
 }

@@ -200,6 +200,21 @@ export class SettingTab extends PluginSettingTab {
                     );
             }
         }
+        containerEl.createEl("h2", { text: "Open After import" });
+        new Setting(containerEl)
+            .setName("Open the imported note")
+            .setDesc(
+                "Select whether to open the imported note after importing a new note. Toggle On: Open the imported note"
+            )
+            .addToggle((t) =>
+                t
+                    .setValue(settings.openAfterImport)
+                    .onChange(async (value) => {
+                        settings.openAfterImport = value;
+                        await plugin.saveSettings();
+                        this.display();
+                    })
+            );
 
         containerEl.createEl("h2", { text: "Update Library" });
         new Setting(containerEl)

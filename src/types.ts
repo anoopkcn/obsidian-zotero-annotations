@@ -9,6 +9,7 @@ export interface MyPluginSettings {
     saveManualEdits: string;
     saveManualEditsStart: string;
     saveManualEditsEnd: string;
+    openAfterImport: boolean;
     imagesImport: boolean;
     imagesCopy: boolean;
     imagesPath: string;

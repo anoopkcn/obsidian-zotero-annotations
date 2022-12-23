@@ -1,0 +1,18 @@
+# vscode
+.vscode 
+.DS_Store
+
+# npm
+node_modules
+package-lock.json
+
+# Exclude sourcemaps
+*.map
+
+# obsidian
+data.json
+
+# exclude js 
+*.js
+*.mjs
+

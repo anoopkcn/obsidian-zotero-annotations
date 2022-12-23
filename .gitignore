@@ -1,6 +1,8 @@
 # vscode
 .vscode 
 .DS_Store
+*.zip
+obsidian-zotero-annotations
 
 # npm
 node_modules

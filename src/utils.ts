@@ -1348,7 +1348,6 @@ export function updateLibrary(settings: MyPluginSettings) {
         bibtexArray.push(selectedEntry.citationKey);
     }
 
-    // Console.log the number of items updated
     new Notice("Updated " + bibtexArray.length + " entries");
     //Update the date when the update was last done
     settings.lastUpdateDate = new Date();

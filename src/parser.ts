@@ -633,16 +633,35 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: M
             lineElements.highlightColour = highlightColour;
         }
 
-        //Extracte the page of the pdf
-        if (/"pageIndex":\d+/gm.test(selectedLineOriginal)) {
+        //Extracte the page of  where the annotation is in the PDF
+        // if (/"pageIndex":\d+/gm.test(selectedLineOriginal)) {
+        //     let pagePDF = String(
+        //         selectedLineOriginal.match(/"pageIndex":\d+/gm)
+        //     );
+        //     if (pagePDF == null) {
+        //         lineElements.pagePDF = null;
+        //     } else {
+        //         pagePDF = pagePDF.replace('"pageIndex":', "");
+        //         lineElements.pagePDF = Number(pagePDF) + 1;
+        //     }
+        // }
+
+        // Extract the location of the annotation in the PDF
+        // "locator":"365"
+        if (/"locator":"\d+"/gm.test(selectedLineOriginal)) {
+            console.log(selectedLineOriginal);
             let pagePDF = String(
-                selectedLineOriginal.match(/"pageIndex":\d+/gm)
+                //sometimes there are more than one locator
+                selectedLineOriginal.match(/"locator":"\d+"/gm)[0] 
             );
             if (pagePDF == null) {
                 lineElements.pagePDF = null;
             } else {
-                pagePDF = pagePDF.replace('"pageIndex":', "");
-                lineElements.pagePDF = Number(pagePDF) + 1;
+                pagePDF = pagePDF.replace('"locator":', "");
+                pagePDF = pagePDF.replaceAll('"', "");
+                // console.log(pagePDF)
+                lineElements.pagePDF = Number(pagePDF);
+
             }
         }
 

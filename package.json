@@ -1,6 +1,6 @@
 {
     "name": "zotero annotations",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "Plugin to import and format annotations from Zotero",
     "main": "main.js",
     "scripts": {

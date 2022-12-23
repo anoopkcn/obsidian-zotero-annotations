@@ -649,7 +649,6 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: M
         // Extract the location of the annotation in the PDF
         // "locator":"365"
         if (/"locator":"\d+"/gm.test(selectedLineOriginal)) {
-            console.log(selectedLineOriginal);
             let pagePDF = String(
                 //sometimes there are more than one locator
                 selectedLineOriginal.match(/"locator":"\d+"/gm)[0] 
@@ -659,7 +658,6 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: M
             } else {
                 pagePDF = pagePDF.replace('"locator":', "");
                 pagePDF = pagePDF.replaceAll('"', "");
-                // console.log(pagePDF)
                 lineElements.pagePDF = Number(pagePDF);
 
             }

@@ -202,9 +202,9 @@ export class SettingTab extends PluginSettingTab {
         }
         containerEl.createEl("h2", { text: "Open After import" });
         new Setting(containerEl)
-            .setName("Open the imported note")
+            .setName("Open the updated note")
             .setDesc(
-                "Select whether to open the imported note after importing a new note. Toggle On: Open the imported note"
+                "Select whether to open note in the current view after updating note. Toggle On: Open the updated note"
             )
             .addToggle((t) =>
                 t

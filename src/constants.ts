@@ -51,7 +51,7 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
     templateContent: templatePlain,
     templatePath: "",
     templateType: "Admonition",
-    lastUpdateDate: new Date("1995-12-17T03:24:00"),
+    lastUpdateDate: new Date("1990-01-01T00:00:00"),
     updateLibrary: "Only update existing notes",
     exportPath: "",
     exportTitle: "@{{citeKey}}",

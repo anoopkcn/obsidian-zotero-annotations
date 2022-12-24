@@ -25,6 +25,13 @@ export function camelToNormalCase(str: string) {
     );
 }
 
+// Cleanup title of the document (remove URL, remove special characters)
+export function truncate(str: string, n: number) {
+    var str = str.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').replace(/[^\x00-\x7F]/g, "");
+    return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
+};
+
+
 // import template from file if present or set it to the default template
 export async function importTemplate(settings: MyPluginSettings): Promise<string> {
     const template = this.app.metadataCache.getFirstLinkpathDest(
@@ -602,26 +609,15 @@ export function replaceMissingFields(
     }
 
     //Remove empty sections when there is no data
-    copy = copy.replace("```ad-quote\n" + "title: Abstract\n" + "```\n", "");
-    copy = copy.replace(
-        "```ad-abstract\n" + "title: Files and Links\n" + "```\n",
-        ""
-    );
-    copy = copy.replace(
-        "```ad-note\n" + "title: Tags and Collections\n" + "```\n",
-        ""
-    );
-
-    //Remove empty sections when there is no data
     copy = copy.replace(
         "## Abstract\n" + "\n" + "## Files and Links\n",
         "## Files and Links\n"
     );
     copy = copy.replace(
-        "## Files and Links\n" + "\n" + "## Tags and Collections\n",
-        "## Tags and Collections\n"
+        "## Files and Links\n" + "\n" + "## Zotero Tags\n",
+        "## Zotero Tags\n"
     );
-    copy = copy.replace("## Tags and Collections\n" + "\n", "\n");
+    copy = copy.replace("## Zotero Tags\n" + "\n", "\n");
 
     return copy;
 }
@@ -1182,8 +1178,8 @@ export async function createNote(selectedEntry: Reference, settings: MyPluginSet
     // Define the name and full path of the file to be exported
     const noteTitleFull = createNoteTitle(
         selectedEntry,
-        settings.exportTitle,
-        settings.exportPath
+        settings.importFileName,
+        settings.importPath
     );
     // Extract the annotation and the keyword from the text
     const resultAnnotations = extractAnnotation(
@@ -1254,7 +1250,7 @@ export async function createNote(selectedEntry: Reference, settings: MyPluginSet
 }
 
 
-export function updateLibrary(settings: MyPluginSettings) {
+export function updateNotes(settings: MyPluginSettings) {
     console.log("Updating Zotero library");
     // get basepath
     //@ts-ignore
@@ -1305,12 +1301,12 @@ export function updateLibrary(settings: MyPluginSettings) {
 
         // skip if the setting is to update only existing note and the note is not found at the give folder
         if (
-            settings.updateLibrary === "Only existing notes" &&
+            settings.updateNotes === "Only existing notes" &&
             !fs.existsSync(
                 createNoteTitle(
                     selectedEntry,
-                    settings.exportTitle,
-                    settings.exportPath
+                    settings.importFileName,
+                    settings.importPath
                 )
             )
         )
@@ -1332,8 +1328,3 @@ export function openNoteAfterImport(file: TFile, isOpen: boolean) {
         this.app.workspace.getLeaf(false).openFile(file);
     }
 }
-
-export function truncate(str: string, n: number) {
-    var str = str.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').replace(/[^\x00-\x7F]/g, "");
-    return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
-};

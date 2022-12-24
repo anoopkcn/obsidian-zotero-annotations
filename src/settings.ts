@@ -16,11 +16,11 @@ export class SettingTab extends PluginSettingTab {
 
         // containerEl.createEl("h1", { text: "Zotero Annotations " });
 
-        containerEl.createEl("h2", { text: "Import Library" });
+        containerEl.createEl("h2", { text: "Zotero Library" });
         new Setting(containerEl)
             .setName("BetterBibTeX JSON File")
             .setDesc(
-                "Add relative path from the vault folder to the BetterBibTeX JSON file to be imported."
+                "Add relative path from the vault folder to the BetterBibTeX JSON file."
             )
             .addText((text) =>
                 text
@@ -32,34 +32,34 @@ export class SettingTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Export Notes" });
+        containerEl.createEl("h2", { text: "Import Notes" });
 
         new Setting(containerEl)
-            .setName("Export Path")
+            .setName("Import Path")
             .setDesc(
-                "Add the relative path to the folder inside your vault where the notes will be exported"
+                "Add the relative path to the folder inside your vault where the notes will be imported"
             )
             .addText((text) =>
                 text
                     .setPlaceholder("/path/to/folder")
-                    .setValue(settings.exportPath)
+                    .setValue(settings.importPath)
                     .onChange(async (value) => {
-                        settings.exportPath = value;
+                        settings.importPath = value;
                         await plugin.saveSettings();
                     })
             );
 
         new Setting(containerEl)
-            .setName("Note Title")
+            .setName("Note File Name")
             .setDesc(
-                "Select the format of the title of the note. Possible values include: {{citeKey}}, {{title}}, {{author}},{{authorInitials}}, {{authorFullName}} {{year}}"
+                "Select the format of the note file name. Possible values include: {{citeKey}}, {{title}}, {{author}},{{authorInitials}}, {{authorFullName}} {{year}}"
             )
             .addText((text) =>
                 text
                     .setPlaceholder("@{{citeKey}}")
-                    .setValue(settings.exportTitle)
+                    .setValue(settings.importFileName)
                     .onChange(async (value) => {
-                        settings.exportTitle = value;
+                        settings.importFileName = value;
                         await plugin.saveSettings();
                     })
             );
@@ -68,7 +68,7 @@ export class SettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName("Template File")
             .setDesc(
-                "Add relative path from the vault folder to the template file. If no template is specified, the default template will be used."
+                "Add relative path from the vault folder to the template file. If no template is specified, the default template will be used. Without .md extension."
             )
             .addText((text) =>
                 text
@@ -108,7 +108,7 @@ export class SettingTab extends PluginSettingTab {
             });
         if (settings.missingfield === "Replace with custom text") {
             new Setting(containerEl)
-                .setName("Replacement for missing fields")
+                .setName("Custom text replacement for missing fields")
                 .addText((text) =>
                     text
                         .setValue(settings.missingfieldreplacement)
@@ -122,7 +122,7 @@ export class SettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName("Format Names")
             .setDesc(
-                "Specify how the names of the authors/editors should be exported. Accepted values are {{firstName}}, {{lastName}} and {{firstNameInitials}}"
+                "Specify how the names of the authors/editors should be imported. Accepted values are {{firstName}}, {{lastName}} and {{firstNameInitials}}"
             )
             .addText((text) =>
                 text.setValue(settings.nameFormat).onChange(async (value) => {
@@ -148,9 +148,9 @@ export class SettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Save Manual Edits")
+            .setName("Note Update Preservation")
             .setDesc(
-                'Select "Overwrite Entire Note" to overwrite the note on update. "Select Section" will preserve sections that are inside the selected sections and overwrite everything outside the sections. Manual edits/additions to the document will be preserved within the selected sections.'
+                'Select "Overwrite Entire Note" to overwrite the note on update. No manual edits from before is preserved. "Select Section" will preserve sections that are inside the selected sections and overwrite everything outside the sections.'
             )
             .addDropdown((d) => {
                 // d.addOption("Save Entire Note", "Save Entire Note");
@@ -200,6 +200,20 @@ export class SettingTab extends PluginSettingTab {
                     );
             }
         }
+        new Setting(containerEl)
+            .setName("Multiple Annotaion Files")
+            .setDesc(
+                "Select whether to import all annotation files associated with a reference or the latest note. Toggle On: Import All notes"
+            )
+            .addToggle((t) =>
+                t
+                    .setValue(settings.importAllAnnotationFiles)
+                    .onChange(async (value) => {
+                        settings.importAllAnnotationFiles = value;
+                        await plugin.saveSettings();
+                        this.display();
+                    })
+            );
         containerEl.createEl("h2", { text: "Open After import" });
         new Setting(containerEl)
             .setName("Open the updated note")
@@ -216,21 +230,21 @@ export class SettingTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Update Library" });
+        containerEl.createEl("h2", { text: "Update Notes" });
         new Setting(containerEl)
             .setName("Update Existing/All Notes")
             .setDesc(
-                "Select whether to create new notes that are missing from Obsidian but present/modified within Zotero when runing the Update Library command"
+                "Select whether to create new notes that are missing from Obsidian but present/modified within Zotero when runing the Update Notes command"
             )
             .addDropdown((d) => {
                 d.addOption("Only existing notes", "Only existing notes");
                 d.addOption("Create when missing", "Create when missing");
-                d.setValue(settings.updateLibrary);
+                d.setValue(settings.updateNotes);
                 d.onChange(
                     async (
                         v: "Only existing notes" | "Create when missing"
                     ) => {
-                        settings.updateLibrary = v;
+                        settings.updateNotes = v;
                         await plugin.saveSettings();
                     }
                 );

@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS } from "./constants";
 import { fuzzySelectEntryFromJson } from "./modal";
 import { SettingTab } from "./settings";
 import { MyPluginSettings } from "./types";
-import { updateLibrary } from "./utils";
+import { updateNotes as updateNotes } from "./utils";
 
 // This is the main plugin class
 // It is responsible for loading the plugin settings, adding the settings tab, and adding the command
@@ -32,8 +32,8 @@ export default class MyPlugin extends Plugin {
 
         this.addCommand({
             id: "zotero_annotations-update-library",
-            name: "Update Library",
-            callback: () => updateLibrary(this.settings),
+            name: "Update Notes",
+            callback: () => updateNotes(this.settings),
         });
     }
 

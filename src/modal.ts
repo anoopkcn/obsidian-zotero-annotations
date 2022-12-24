@@ -227,8 +227,8 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
             //open note  after import
             const noteTitleFull = createNoteTitle(
                 selectedEntry,
-                this.plugin.settings.exportTitle,
-                this.plugin.settings.exportPath
+                this.plugin.settings.importFileName,
+                this.plugin.settings.importPath
             );
             const noteTitleShort = noteTitleFull.replace(
                 //@ts-ignore

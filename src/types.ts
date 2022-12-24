@@ -3,8 +3,9 @@ export interface MyPluginSettings {
     templateContent: string;
     templatePath: string;
     templateType: string;
-    exportPath: string;
-    exportTitle: string;
+    importPath: string;
+    importFileName: string;
+    importAllAnnotationFiles: boolean;
     missingfield: string;
     saveManualEdits: string;
     saveManualEditsStart: string;
@@ -31,7 +32,7 @@ export interface MyPluginSettings {
     keyKeyword: string;
     keyTask: string;
     lastUpdateDate: Date;
-    updateLibrary: string;
+    updateNotes: string;
     isHighlightItalic: boolean;
     isHighlightBold: boolean;
     isHighlightHighlighted: boolean;

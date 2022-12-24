@@ -73,6 +73,50 @@ export function getAnnotationType(
     return annotationType;
 }
 
+export function getExtractionType(note: string) {
+    //Identify the extraction Type (Zotero vs. Zotfile)
+    let extractionType = undefined;
+
+    if (unescape(note).includes("<span class=")) {
+        extractionType = "Zotero";
+    } else if (
+        unescape(note).includes('<a href="zotero://open-pdf/library/')
+    ) {
+        extractionType = "Zotfile";
+    }
+    //Identify manual notes (not extracted from PDF) extracted from zotero
+    else if (unescape(note).includes("div data-schema-version")) {
+        extractionType = "UserNote";
+    } else {
+        extractionType = "Other";
+    }
+    return extractionType;
+}
+
+export function collectAnnotations(note: string, settings: MyPluginSettings) {
+    // Remove special characters that would break the replacement of the text in the template
+    //lineElements.rowEdited = lineElements.rowEdited.replaceAll("$>", '$$');
+    note = note.replaceAll("$&", "$ &");
+
+    const extractionType = getExtractionType(note);
+
+    let noteElementsSingle: AnnotationElements[] = []; // array of elements
+    if (extractionType === "Zotero") {
+        noteElementsSingle = parseAnnotationLinesintoElementsZotero(note, settings);
+    }
+
+    if (extractionType === "Zotfile") {
+        noteElementsSingle = parseAnnotationLinesintoElementsZotfile(note, settings);
+    }
+
+    if (extractionType === "UserNote" || extractionType === "Other") {
+        noteElementsSingle = parseAnnotationLinesintoElementsUserNote(note);
+    }
+    return {
+        noteElementsSingle: noteElementsSingle,
+        extractionType: extractionType
+    }
+}
 
 export function extractAnnotation(selectedEntry: Reference, noteTitleFull: string, settings: MyPluginSettings) {
     let extractedAnnotations = "";
@@ -80,63 +124,37 @@ export function extractAnnotation(selectedEntry: Reference, noteTitleFull: strin
     let extractedUserNote = "";
     let keywordArray: string[] = [];
 
+    let noteElements: AnnotationElements[] = [];
+    let userNoteElements: AnnotationElements[] = [];
+    let indexNote = 0;
+
     const zoteroInfo = zoteroAppInfo(selectedEntry, settings)
 
     //run the function to parse the annotation for each note (there could be more than one)
-    let noteElements: AnnotationElements[] = [];
-    let userNoteElements: AnnotationElements[] = [];
+
+    function concatNotes(note: string) {
+        const noteElementsSingle = collectAnnotations(note, settings).noteElementsSingle;
+        const extractionType = collectAnnotations(note, settings).extractionType;
+        if (extractionType === "Zotero" || extractionType === "Zotfile") {
+            noteElements = noteElements.concat(noteElementsSingle);
+        } else if (extractionType === "UserNote" || extractionType === "Other") {
+            userNoteElements = userNoteElements.concat(noteElementsSingle);
+        }
+    }
+
     if (selectedEntry.notes.length > 0) {
-        let indexNote = selectedEntry.notes.length - 1;
-        // for (
-        //     let indexNote = 0;
-        //     indexNote < selectedEntry.notes.length;
-        //     indexNote++
-        // ) {
-        let note = selectedEntry.notes[indexNote].note;
 
-        // Remove special characters that would break the replacement of the text in the template
-        //lineElements.rowEdited = lineElements.rowEdited.replaceAll("$>", '$$');
-        note = note.replaceAll("$&", "$ &");
-
-        //Identify the extraction Type (Zotero vs. Zotfile)
-        let extractionType = undefined;
-
-        if (unescape(note).includes("<span class=")) {
-            extractionType = "Zotero";
-        } else if (
-            unescape(note).includes('<a href="zotero://open-pdf/library/')
-        ) {
-            extractionType = "Zotfile";
-        }
-        //Identify manual notes (not extracted from PDF) extracted from zotero
-        else if (unescape(note).includes("div data-schema-version")) {
-            extractionType = "UserNote";
+        // cincatinate notes and annotations from multiple files for the same reference
+        if (settings.importAllAnnotationFiles) {
+            for (indexNote = 0; indexNote < selectedEntry.notes.length; indexNote++) {
+                let note = selectedEntry.notes[indexNote].note;
+                concatNotes(note);
+            }
         } else {
-            extractionType = "Other";
+            let indexNote = selectedEntry.notes.length - 1;
+            let note = selectedEntry.notes[indexNote].note;
+            concatNotes(note);
         }
-        let noteElementsSingle: AnnotationElements[] = []; // array of elements
-        if (extractionType === "Zotero") {
-            noteElementsSingle =
-                parseAnnotationLinesintoElementsZotero(note, settings);
-            noteElements = noteElements.concat(noteElementsSingle); //concatenate the annotation element to the next one
-        }
-
-        if (extractionType === "Zotfile") {
-            noteElementsSingle =
-                parseAnnotationLinesintoElementsZotfile(note, settings);
-
-            noteElements = noteElements.concat(noteElementsSingle); //concatenate the annotation element to the next one
-        }
-
-        if (extractionType === "UserNote" || extractionType === "Other") {
-            noteElementsSingle =
-                parseAnnotationLinesintoElementsUserNote(note);
-            userNoteElements = userNoteElements.concat(noteElementsSingle); //concatenate the annotation element to the next one
-        }
-        // noteElements = noteElements;
-        // userNoteElements = userNoteElements;
-        // }
-
         //Run the function to edit each line
         const resultsLineElements = formatNoteElements(
             noteElements,
@@ -175,12 +193,9 @@ export function extractAnnotation(selectedEntry: Reference, noteTitleFull: strin
 export function parseMetadata(selectedEntry: Reference, settings: MyPluginSettings, templateOriginal: string) {
     // Create Note from Template
     const template = templateOriginal;
-
     //Create Note
     let note = template;
-
     //Replace the author/s
-
     note = createCreatorList(
         selectedEntry.creators,
         "author",
@@ -638,7 +653,7 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: M
         if (/"locator":"\d+"/gm.test(selectedLineOriginal)) {
             let pagePDF = String(
                 // sometimes there are more than one locator
-                selectedLineOriginal.match(/"locator":"\d+"/gm)[0] 
+                selectedLineOriginal.match(/"locator":"\d+"/gm)[0]
             );
             if (pagePDF == null) {
                 lineElements.pagePDF = null;

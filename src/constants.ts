@@ -110,7 +110,7 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
     isDoubleSpaced: true,
     highlightExportTemplate: "{{highlight}} {{comment}} {{tag}}",
     multipleFieldsDivider: ",",
-    nameFormat: "{{lastName}}, {{firstName}}",
+    nameFormat: "{{firstName}} {{lastName}}",
     highlightCitationsFormat: "Author, year, page number",
     highlightCitationsLink: true,
     debugMode: false,

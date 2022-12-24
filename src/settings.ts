@@ -16,7 +16,7 @@ export class SettingsTab extends PluginSettingTab {
 
         // containerEl.createEl("h1", { text: "Zotero Annotations " });
 
-        containerEl.createEl("h2", { text: "Zotero Library" });
+        containerEl.createEl("h2", { text: "General Settings" });
         new Setting(containerEl)
             .setName("BetterBibTeX JSON File")
             .setDesc(
@@ -32,10 +32,10 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Import Notes" });
+        // containerEl.createEl("h2", { text: "Import Notes" });
 
         new Setting(containerEl)
-            .setName("Import Path")
+            .setName("Import Notes Folder")
             .setDesc(
                 "Add the relative path to the folder inside your vault where the notes will be imported"
             )
@@ -64,7 +64,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Template" });
+        // containerEl.createEl("h2", { text: "Template" });
         new Setting(containerEl)
             .setName("Template File")
             .setDesc(
@@ -214,7 +214,8 @@ export class SettingsTab extends PluginSettingTab {
                         this.display();
                     })
             );
-        containerEl.createEl("h2", { text: "Open After import" });
+
+        // containerEl.createEl("h2", { text: "Open After import" });
         new Setting(containerEl)
             .setName("Open the updated note")
             .setDesc(
@@ -230,7 +231,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Update Notes" });
+        // containerEl.createEl("h2", { text: "Update Notes" });
         new Setting(containerEl)
             .setName("Update Existing/All Notes")
             .setDesc(
@@ -250,7 +251,7 @@ export class SettingsTab extends PluginSettingTab {
                 );
             });
 
-        containerEl.createEl("h2", { text: "In-text citations" });
+        // containerEl.createEl("h2", { text: "In-text citations" });
 
         new Setting(containerEl)
             .setName("Format of Zotero Backlinks")
@@ -306,7 +307,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        containerEl.createEl("h2", { text: "Import Images" });
+        // containerEl.createEl("h2", { text: "Import Images" });
 
         new Setting(containerEl)
             .setName("Import Images")

@@ -18,7 +18,7 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "General Settings" });
         new Setting(containerEl)
-            .setName("BetterBibTeX JSON File")
+            .setName("BetterBibTeX JSON File*")
             .setDesc(
                 "Add relative path from the vault folder to the BetterBibTeX JSON file."
             )
@@ -80,6 +80,7 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
+        containerEl.createEl("h2", { text: "Notes Import Settings" });
         new Setting(containerEl)
             .setName("Missing Fields")
             .setDesc(
@@ -147,6 +148,80 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
+        // containerEl.createEl("h2", { text: "In-text citations" });
+        new Setting(containerEl)
+            .setName("Create Link to the Highlight Page in the PDF")
+            .setDesc(
+                "If enabled, a link will be created at the end of the extracted highlights or figures to the original page of the PDF in the Zotero reader"
+            )
+            .addToggle((text) =>
+                text
+                    .setValue(settings.highlightCitationsLink)
+                    .onChange(async (value) => {
+                        settings.highlightCitationsLink = value;
+                        await plugin.saveSettings();
+                        this.display();
+                    })
+            );
+
+        if (settings.highlightCitationsLink) {
+            new Setting(containerEl)
+                .setName("Format of Zotero Backlinks")
+                .setDesc(
+                    "Select the style of the reference added next to the highlights and figures extracted from the PDF. This feature is for now available only for sources extracted from Zotero"
+                )
+                .addDropdown((d) => {
+                    d.addOption(
+                        "Author, year, page number",
+                        "Author, year, page number"
+                    );
+                    d.addOption("Only page number", "Only page number");
+                    d.addOption("Pandoc", "Pandoc");
+                    d.addOption("Empty", "Empty");
+                    d.setValue(settings.highlightCitationsFormat);
+                    d.onChange(
+                        async (
+                            v:
+                                | "Author, year, page number"
+                                | "Only page number"
+                                | "Pandoc"
+                                | "Empty"
+                        ) => {
+                            settings.highlightCitationsFormat = v;
+                            await plugin.saveSettings();
+                        }
+                    );
+                });
+        }
+
+        new Setting(containerEl)
+            .setName("Structure of the extracted highlights/comments/tag")
+            .setDesc("Placeholder include {{highlight}}, {{comment}}, {{tag}}")
+            .addTextArea((text) =>
+                text
+                    .setValue(settings.highlightExportTemplate)
+                    .onChange(async (value) => {
+                        settings.highlightExportTemplate = value;
+                        await plugin.saveSettings();
+                    })
+            );
+
+        new Setting(containerEl)
+            .setName("Multiple Annotaion Files")
+            .setDesc(
+                "Select whether to import all annotation files associated with a reference or the latest note. Toggle On: Import All notes"
+            )
+            .addToggle((t) =>
+                t
+                    .setValue(settings.importAllAnnotationFiles)
+                    .onChange(async (value) => {
+                        settings.importAllAnnotationFiles = value;
+                        await plugin.saveSettings();
+                        this.display();
+                    })
+            );
+
+        containerEl.createEl("h2", { text: "Notes Update Settings" });
         new Setting(containerEl)
             .setName("Note Update Preservation")
             .setDesc(
@@ -160,7 +235,7 @@ export class SettingsTab extends PluginSettingTab {
                 d.onChange(
                     async (
                         v: // | "Save Entire Note"
-                        "Select Section" | "Overwrite Entire Note"
+                            "Select Section" | "Overwrite Entire Note"
                     ) => {
                         settings.saveManualEdits = v;
                         await plugin.saveSettings();
@@ -200,21 +275,6 @@ export class SettingsTab extends PluginSettingTab {
                     );
             }
         }
-        new Setting(containerEl)
-            .setName("Multiple Annotaion Files")
-            .setDesc(
-                "Select whether to import all annotation files associated with a reference or the latest note. Toggle On: Import All notes"
-            )
-            .addToggle((t) =>
-                t
-                    .setValue(settings.importAllAnnotationFiles)
-                    .onChange(async (value) => {
-                        settings.importAllAnnotationFiles = value;
-                        await plugin.saveSettings();
-                        this.display();
-                    })
-            );
-
         // containerEl.createEl("h2", { text: "Open After import" });
         new Setting(containerEl)
             .setName("Open the updated note")
@@ -251,63 +311,7 @@ export class SettingsTab extends PluginSettingTab {
                 );
             });
 
-        // containerEl.createEl("h2", { text: "In-text citations" });
-
-        new Setting(containerEl)
-            .setName("Format of Zotero Backlinks")
-            .setDesc(
-                "Select the style of the reference added next to the highlights and figures extracted from the PDF. This feature is for now available only for sources extracted from Zotero"
-            )
-            .addDropdown((d) => {
-                d.addOption(
-                    "Author, year, page number",
-                    "Author, year, page number"
-                );
-                d.addOption("Only page number", "Only page number");
-                d.addOption("Pandoc", "Pandoc");
-                d.addOption("Empty", "Empty");
-                d.setValue(settings.highlightCitationsFormat);
-                d.onChange(
-                    async (
-                        v:
-                            | "Author, year, page number"
-                            | "Only page number"
-                            | "Pandoc"
-                            | "Empty"
-                    ) => {
-                        settings.highlightCitationsFormat = v;
-                        await plugin.saveSettings();
-                    }
-                );
-            });
-        new Setting(containerEl)
-            .setName("Create Link to the Highlight Page in the PDF")
-            .setDesc(
-                "If enabled, a link will be created at the end of the extracted highlights or figures to the original page of the PDF in the Zotero reader"
-            )
-            .addToggle((text) =>
-                text
-                    .setValue(settings.highlightCitationsLink)
-                    .onChange(async (value) => {
-                        settings.highlightCitationsLink = value;
-                        await plugin.saveSettings();
-                        this.display();
-                    })
-            );
-
-        new Setting(containerEl)
-            .setName("Structure of the extracted highlights/comments/tag")
-            .setDesc("Placeholder include {{highlight}}, {{comment}}, {{tag}}")
-            .addTextArea((text) =>
-                text
-                    .setValue(settings.highlightExportTemplate)
-                    .onChange(async (value) => {
-                        settings.highlightExportTemplate = value;
-                        await plugin.saveSettings();
-                    })
-            );
-
-        // containerEl.createEl("h2", { text: "Import Images" });
+        containerEl.createEl("h2", { text: "Images Settings" });
 
         new Setting(containerEl)
             .setName("Import Images")

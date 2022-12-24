@@ -1,0 +1,54 @@
+.zaModalResults .suggestion-item {
+    height: fit-content;
+    line-height: 1.5rem;
+}
+
+.zaTitle {
+    /* font-size: 14px; */
+    display: block;
+}
+
+.zaTitle::before {
+    content: '📖 ';
+    font-weight: bold;
+}
+
+.zaAuthors {
+    color: #555;
+    font-size: 13px;
+}
+
+.zaAuthorsEmpty::after {
+    font-style: italic;
+    content: 'Unknown authors';
+}
+
+.zaCitekey {
+    color: #9079E9;
+    font-size: 13px;
+    font-family: monospace;
+    display: inline-block;
+    margin-right: 5px;
+    padding-right: 5px;
+    border-right: 1px solid #ccc;
+}
+
+.theme-dark .zaTitle {
+    /* font-size: 14px; */
+    display: block;
+}
+
+.theme-dark .zaAuthors {
+    color: #aaa;
+    font-size: 13px;
+}
+
+.theme-dark .zaCitekey {
+    color: #9079E9;
+    font-size: 13px;
+    font-family: monospace;
+    display: inline-block;
+    margin-right: 5px;
+    padding-right: 5px;
+    /* border-right: 1px solid #aaa; */
+}

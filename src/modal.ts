@@ -2,10 +2,14 @@ import MyPlugin from "./main";
 import * as fs from "fs";
 import {
     App,
+    FuzzyMatch,
     FuzzySuggestModal,
     Notice,
     Platform,
+    SearchMatchPart,
+    SearchMatches,
     normalizePath,
+    renderMatches,
 } from "obsidian";
 
 import { Reference, AnnotationElements } from "./types";
@@ -16,7 +20,9 @@ import {
     createNoteTitle,
     openNoteAfterImport,
     orderByDateModified,
+    truncate,
 } from "./utils";
+
 
 export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
     plugin: MyPlugin;
@@ -78,6 +84,8 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
             bibtexArrayItem.citationKey = selectedEntry.citationKey;
 
             //Extract the title key
+            const truncateTitle = truncate(selectedEntry.title, 120);
+            selectedEntry.title = truncateTitle;
             bibtexArrayItem.title = selectedEntry.title;
 
             // Extract the date
@@ -96,9 +104,8 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
 
             //Create the reference
             bibtexArrayItem.inlineReference = bibtexArrayItem.authorKey +
-                " (" + bibtexArrayItem.date + ") " +
+                bibtexArrayItem.date +
                 bibtexArrayItem.title + 
-                "\n" +
                 bibtexArrayItem.citationKey;
 
             bibtexArray.push(bibtexArrayItem);
@@ -119,12 +126,73 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
     }
 
     // Renders each suggestion item.
-    getItemText(referenceSelected: Reference) {
+    getItemText(referenceSelected: Reference): string {
         return referenceSelected.inlineReference;
     }
     async updateSuggestions() {
         // @ts-ignore: not exposed in API.
         await super.updateSuggestions();
+    }
+
+    renderSuggestion(match: FuzzyMatch<Reference>, el: HTMLElement): void {
+        el.empty();
+        const entry = match.item;
+        const entryTitle = entry.title || '';
+
+        const container = el.createEl('div', { cls: 'zaModalResult' });
+        const titleEl = container.createEl('span', {
+            cls: 'zaTitle',
+        });
+        container.createEl('span', { cls: 'zaCitekey', text: entry.citationKey });
+
+        const authorsCls = entry.authorKey
+            ? 'zaAuthors'
+            : 'zaAuthors zaAuthorsEmpty';
+        const authorsEl = container.createEl('span', {
+            cls: authorsCls,
+        });
+
+        // Prepare to highlight string matches for each part of the search item.
+        // Compute offsets of each rendered element's content within the string
+        // returned by `getItemText`.
+        const allMatches = match.match.matches;
+        // const authorStringOffset = entryTitle.length;
+
+        // Filter a match list to contain only the relevant matches for a given
+        // substring, and with match indices shifted relative to the start of that
+        // substring
+        const shiftMatches = (
+            matches: SearchMatches,
+            start: number,
+            end: number,
+        ) => {
+            return matches
+                .map((match: SearchMatchPart) => {
+                    const [matchStart, matchEnd] = match;
+                    return [
+                        matchStart - start,
+                        Math.min(matchEnd - start, end),
+                    ] as SearchMatchPart;
+                })
+                .filter((match: SearchMatchPart) => {
+                    const [matchStart, matchEnd] = match;
+                    return matchStart >= 0;
+                });
+        };
+
+        // Now highlight matched strings within each element
+        renderMatches(
+            titleEl,
+            entryTitle,
+            shiftMatches(allMatches, 0, entryTitle.length),
+        );
+        if (entry.authorKey) {
+            renderMatches(
+                authorsEl,
+                entry.authorKey,
+                shiftMatches(allMatches, 0, entry.authorKey.length),
+            );
+        }
     }
 
     // Perform action on the selected suggestion.

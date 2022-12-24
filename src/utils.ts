@@ -1332,3 +1332,8 @@ export function openNoteAfterImport(file: TFile, isOpen: boolean) {
         this.app.workspace.getLeaf(false).openFile(file);
     }
 }
+
+export function truncate(str: string, n: number) {
+    var str = str.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').replace(/[^\x00-\x7F]/g, "");
+    return (str.length > n) ? str.slice(0, n - 1) + '...' : str;
+};

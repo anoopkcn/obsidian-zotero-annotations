@@ -1,10 +1,10 @@
 
 import * as fs from "fs";
 import path from "path";
-import { AnnotationElements, MyPluginSettings, ZoteroInfo } from "./types";
+import { AnnotationElements, PluginSettings, ZoteroInfo } from "./types";
 import { Notice, normalizePath } from "obsidian";
 
-export function createFormatting(settings: MyPluginSettings) {
+export function createFormatting(settings: PluginSettings) {
     const {
         highlightCustomTextAfter,
         highlightCustomTextBefore,
@@ -157,7 +157,7 @@ export function createFormatting(settings: MyPluginSettings) {
 export function formatNoteElements(
     noteElements: AnnotationElements[],
     citeKey: string,
-    settings: MyPluginSettings,
+    settings: PluginSettings,
     zoteroInfo: ZoteroInfo
 ) {
     const { isDoubleSpaced } = settings;
@@ -206,7 +206,7 @@ export function formatNoteElements(
                 lineElements.pageLabel !== undefined
             ) {
                 lineElements.citeKey =
-                    "Page: " + lineElements.pageLabel
+                    "" + lineElements.pageLabel
             } else if (
                 settings.highlightCitationsFormat === "Pandoc" &&
                 lineElements.pageLabel !== undefined
@@ -233,12 +233,12 @@ export function formatNoteElements(
             if (settings.highlightCitationsFormat !== "Pandoc") {
                 lineElements.citeKey =
                     "[" + lineElements.citeKey + "](" + lineElements.zoteroBackLink + ")";
-                lineElements.zoteroBackLink = "[Page: " + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
+                lineElements.zoteroBackLink = " [" + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
             } else {
                 lineElements.citeKey =
-                    lineElements.citeKey + "[Page: " + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
+                    lineElements.citeKey + " [" + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
                 lineElements.zoteroBackLink =
-                    "[Page: " + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
+                    " [" + lineElements.pagePDF + "](" + lineElements.zoteroBackLink + ")";
             }
         } else {
             lineElements.zoteroBackLink = "";

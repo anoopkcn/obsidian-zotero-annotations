@@ -1,4 +1,4 @@
-import MyPlugin from "./main";
+import ZoteroAnnotations from "./main";
 import * as fs from "fs";
 import {
     App,
@@ -24,8 +24,8 @@ import {
 } from "./utils";
 
 
-export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
-    plugin: MyPlugin;
+export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
+    plugin: ZoteroAnnotations;
     template: string;
     selectArray: Reference[];
     allCitationKeys: string[];
@@ -39,7 +39,7 @@ export class fuzzySelectEntryFromJson extends FuzzySuggestModal<Reference> {
     keyWordArray: string[];
     noteElements: AnnotationElements[];
 
-    constructor(app: App, plugin: MyPlugin) {
+    constructor(app: App, plugin: ZoteroAnnotations) {
         super(app);
         this.plugin = plugin;
     }

@@ -1,4 +1,4 @@
-export interface MyPluginSettings {
+export interface PluginSettings {
     bibPath: string;
     templateContent: string;
     templatePath: string;
@@ -18,8 +18,6 @@ export interface MyPluginSettings {
     keyMergeAbove: string;
     keyCommentPrepend: string;
     commentPrependDefault: boolean;
-    // commentPrependDivider: string;
-    // commentAppendDivider: string;
     TagBeginningConfig: string;
     TagEndConfig: string;
     TagDividerConfig: string;

@@ -1,4 +1,4 @@
-import { MyPluginSettings } from "./types";
+import { PluginSettings } from "./types";
 
 export const templatePlain = `
 
@@ -46,7 +46,7 @@ export const templatePlain = `
 {{PDFNotes}}
 `;
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
+export const DEFAULT_SETTINGS: PluginSettings = {
     bibPath: "",
     templateContent: templatePlain,
     templatePath: "",
@@ -68,8 +68,6 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
     keyMergeAbove: "+",
     keyCommentPrepend: "%",
     commentPrependDefault: false,
-    // commentPrependDivider: ": ",
-    // commentAppendDivider: "-> ",
     TagBeginningConfig: "Tag: ",
     TagEndConfig: "",
     TagDividerConfig: "; ",
@@ -86,7 +84,7 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
     isHighlightHighlighted: false,
     isHighlightBullet: true,
     isHighlightBlockquote: false,
-    isHighlightQuote: true,
+    isHighlightQuote: false,
     highlightCustomTextBefore: "",
     highlightCustomTextAfter: "",
     isCommentItalic: false,

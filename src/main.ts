@@ -1,8 +1,8 @@
 import { Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
-import { fuzzySelectEntryFromJson } from "./modal";
-import { SettingTab } from "./settings";
-import { MyPluginSettings } from "./types";
+import { fuzzySelectReference } from "./modal";
+import { SettingsTab } from "./settings";
+import { PluginSettings } from "./types";
 import { updateNotes as updateNotes } from "./utils";
 
 // This is the main plugin class
@@ -14,19 +14,19 @@ import { updateNotes as updateNotes } from "./utils";
 //      - Add the command for Create Literature Note or  Update Literature Notes
 // 2. Save settings function for the settings page
 
-export default class MyPlugin extends Plugin {
-    settings: MyPluginSettings;
+export default class ZoteroAnnotations extends Plugin {
+    settings: PluginSettings;
 
     async onload() {
         await this.loadSettings();
 
-        this.addSettingTab(new SettingTab(this.app, this));
+        this.addSettingTab(new SettingsTab(this.app, this));
 
         this.addCommand({
             id: "zotero_annotations-select-reference-modal",
             name: "Create/Update Literature Note",
             callback: () => {
-                new fuzzySelectEntryFromJson(this.app, this).open();
+                new fuzzySelectReference(this.app, this).open();
             },
         });
 

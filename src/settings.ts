@@ -1,9 +1,9 @@
-import MyPlugin from "./main";
+import ZoteroAnnotations from "./main";
 import { App, PluginSettingTab, Setting } from "obsidian";
 
-export class SettingTab extends PluginSettingTab {
-    plugin: MyPlugin;
-    constructor(app: App, plugin: MyPlugin) {
+export class SettingsTab extends PluginSettingTab {
+    plugin: ZoteroAnnotations;
+    constructor(app: App, plugin: ZoteroAnnotations) {
         super(app, plugin);
         this.plugin = plugin;
     }

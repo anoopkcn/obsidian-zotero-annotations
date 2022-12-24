@@ -4,7 +4,7 @@ import path from "path";
 import {
     Creator,
     CreatorArray,
-    MyPluginSettings,
+    PluginSettings,
     Reference,
 } from "./types";
 
@@ -33,7 +33,7 @@ export function truncate(str: string, n: number) {
 
 
 // import template from file if present or set it to the default template
-export async function importTemplate(settings: MyPluginSettings): Promise<string> {
+export async function importTemplate(settings: PluginSettings): Promise<string> {
     const template = this.app.metadataCache.getFirstLinkpathDest(
         normalizePath(settings.templatePath),
         ""
@@ -858,7 +858,7 @@ export function replaceTagList(
     return metadata;
 }
 
-export function zoteroAppInfo(selectedEntry: Reference, settings: MyPluginSettings) {
+export function zoteroAppInfo(selectedEntry: Reference, settings: PluginSettings) {
 
     //Check the path to the data folder
     if (selectedEntry.attachments[0] !== undefined) {
@@ -924,7 +924,7 @@ export function compareOldNewNote(
     existingNote: string,
     newNote: string,
     authorKey: string,
-    settings: MyPluginSettings
+    settings: PluginSettings
 ) {
     //Find the position of the line breaks in the old note
     const newLineRegex = RegExp(/\n/gm);
@@ -1156,7 +1156,7 @@ export function compareOldNewNote(
 }
 
 
-export async function createNote(selectedEntry: Reference, settings: MyPluginSettings): Promise<void> {
+export async function createNote(selectedEntry: Reference, settings: PluginSettings): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
     const authorKey = createAuthorKey(selectedEntry.creators);
     // set the authorkey field (with or without first name) on the 
@@ -1250,7 +1250,7 @@ export async function createNote(selectedEntry: Reference, settings: MyPluginSet
 }
 
 
-export function updateNotes(settings: MyPluginSettings) {
+export function updateNotes(settings: PluginSettings) {
     console.log("Updating Zotero library");
     // get basepath
     //@ts-ignore

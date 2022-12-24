@@ -492,7 +492,7 @@ export function formatNoteElements(
                     //if the settings is to link to the image in the zotero folder
                     if (settings.imagesCopy === false) {
                         lineElements.rowEdited =
-                            "![](file://" + encodeURI(pathImageOld) + ")" + lineElements.zoteroBackLink;
+                            "![image](file://" + encodeURI(pathImageOld) + ")" + lineElements.zoteroBackLink;
                     }
                     //if the settings is to copy the image from Zotero to the Obsidian vault
                     else {

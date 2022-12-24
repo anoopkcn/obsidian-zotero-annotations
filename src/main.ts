@@ -24,7 +24,7 @@ export default class ZoteroAnnotations extends Plugin {
 
         this.addCommand({
             id: "zotero_annotations-select-reference-modal",
-            name: "Create/Update Literature Note",
+            name: "Create or Update Literature Note",
             callback: () => {
                 new fuzzySelectReference(this.app, this).open();
             },

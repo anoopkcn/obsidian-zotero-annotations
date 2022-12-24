@@ -4,7 +4,6 @@
 }
 
 .zaTitle {
-    /* font-size: 14px; */
     display: block;
 }
 
@@ -34,7 +33,6 @@
 }
 
 .theme-dark .zaTitle {
-    /* font-size: 14px; */
     display: block;
 }
 
@@ -50,5 +48,5 @@
     display: inline-block;
     margin-right: 5px;
     padding-right: 5px;
-    /* border-right: 1px solid #aaa; */
+    border-right: 1px solid #aaa;
 }

@@ -14,7 +14,7 @@ export class SettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        containerEl.createEl("h1", { text: "Zotero Annotations " });
+        // containerEl.createEl("h1", { text: "Zotero Annotations " });
 
         containerEl.createEl("h2", { text: "Import Library" });
         new Setting(containerEl)

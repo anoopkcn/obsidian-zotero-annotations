@@ -1,7 +1,6 @@
 import { PluginSettings } from "./types";
 
 export const templatePlain = `
-
 # {{title}}
 
 ## Metadata

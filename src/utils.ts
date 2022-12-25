@@ -23,10 +23,7 @@ export function resolvePath(rawPath: string): string {
 // convert camelCase to Normal Case
 export function camelToNormalCase(str: string) {
     return (
-        str
-            // insert a space before all caps
-            .replace(/([A-Z])/g, " $1")
-            // uppercase the first character
+        str.replace(/([A-Z])/g, " $1")
             .replace(/^./, function (str) {
                 return str.toUpperCase();
             })
@@ -322,9 +319,9 @@ export const createAuthorKeyInitials = (creators: CreatorArray) => {
             ) {
                 authorKey.push(
                     creator.lastName +
-                        ", " +
-                        creator.firstName.substring(0, 1) +
-                        "."
+                    ", " +
+                    creator.firstName.substring(0, 1) +
+                    "."
                 );
             } else if (
                 creator.hasOwnProperty("lastName") &&
@@ -349,9 +346,9 @@ export const createAuthorKeyInitials = (creators: CreatorArray) => {
             ) {
                 editorKey.push(
                     creator.lastName +
-                        ", " +
-                        creator.firstName.substring(0, 1) +
-                        "."
+                    ", " +
+                    creator.firstName.substring(0, 1) +
+                    "."
                 );
             } else if (
                 creator.hasOwnProperty("lastName") &&
@@ -1224,16 +1221,12 @@ export async function createNote(selectedEntry: Reference, settings: ZoteroAnnot
 
 export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
     console.log("Updating Zotero library");
-    // get basepath
-    //@ts-ignore
-    const basePath = app.vault.adapter.getBasePath();
     // Check if the json file exists
-    const jsonPath = basePath + "/" + settings.bibPath;
+    const jsonPath = resolvePath(settings.bibPath)
     if (!fs.existsSync(jsonPath)) {
         new Notice("No BetterBibTex Json file found at " + jsonPath);
     }
-
-    const rawdata = fs.readFileSync(basePath + "/" + settings.bibPath);
+    const rawdata = fs.readFileSync(jsonPath);
     const data = JSON.parse(rawdata.toString()); // rawdata is a buffer, converted to string
 
     const bibtexArray: string[] = [];
@@ -1267,22 +1260,14 @@ export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
         }
 
         const datemodified = new Date(noteDateModifiedArray[0]);
-
         // skip if it was modified before the last update
-        if (datemodified < lastUpdate) continue; 
-
+        if (datemodified < lastUpdate) continue;
         // skip if the setting is to update only existing note and the note is not found at the give folder
-        if (
-            settings.updateNotes === "Only existing notes" &&
-            !fs.existsSync(
-                createNotePath(createNoteTitle(selectedEntry, settings.importFileName), settings.importPath)
-            )
-        )
-            continue;
-
+        const noteTitle = createNoteTitle(selectedEntry, settings.importFileName)
+        const notePath = createNotePath(noteTitle, settings.importPath)
+        if (settings.updateNotes === "Only existing notes" && !fs.existsSync(notePath)) continue;
         // Create and export Note for select reference
         createNote(selectedEntry, settings);
-
         bibtexArray.push(selectedEntry.citationKey);
     }
 

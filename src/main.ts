@@ -11,7 +11,7 @@ import { updateNotes as updateNotes } from "./utils";
 // 1. On Load 
 //      - Load the settings
 //      - Add the settings page for the plugin (SettingTab)
-//      - Add the command for Create Literature Note or  Update Literature Notes
+//      - Add the command for Create or Update Note or  Update All Notes
 // 2. Save settings function for the settings page
 
 export default class ZoteroAnnotations extends Plugin {

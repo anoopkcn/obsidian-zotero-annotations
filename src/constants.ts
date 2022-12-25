@@ -4,7 +4,7 @@ export const templatePlain = `
 # {{title}}
 
 ## Metadata
-- **CiteKey**: {{citekey}}
+- **CiteKey**: {{citationKey}}
 - **Type**: {{itemType}}
 - **Title**: {{title}} 
 - **Author**: {{author}}  

@@ -3,7 +3,7 @@ Import PDF annotation notes and metadata from Zotero to Obsidian.
 
 ## Requirements
 - [Zotero](https://www.zotero.org/) `v6.x` with [Better BibTeX](https://retorque.re/zotero-better-bibtex/) plugin installed.
-    - Export BetterBibTeX JSON file from Zotero to Obsidian vault(In BetterBibTeX settings select `On Change` option in the Automatic Export tab)
+    - Export BetterBibTeX JSON file from Zotero to Obsidian vault(Also, In BetterBibTeX settings select `On Change` option in the Automatic Export tab)
 - [Obsidian](https://obsidian.md/)
 
 ## Installation

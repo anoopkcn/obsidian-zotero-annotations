@@ -53,8 +53,8 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
             this.focusInput();
         }
 
-        // Load the Json file
-        // Check if the json file exists
+        // Load the JSON file
+        // Check if the file exists
         const jsonPath =
             //@ts-ignore
             this.app.vault.adapter.getBasePath() +
@@ -152,15 +152,8 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
             cls: authorsCls,
         });
 
-        // Prepare to highlight string matches for each part of the search item.
-        // Compute offsets of each rendered element's content within the string
-        // returned by `getItemText`.
         const allMatches = match.match.matches;
-        // const authorStringOffset = entryTitle.length;
 
-        // Filter a match list to contain only the relevant matches for a given
-        // substring, and with match indices shifted relative to the start of that
-        // substring
         const shiftMatches = (
             matches: SearchMatches,
             start: number,

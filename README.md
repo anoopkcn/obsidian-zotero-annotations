@@ -86,7 +86,12 @@ tags: reference
 ```
 
 Above template will produce the following note:
-![reference page](./images/zotero_annotations_reference.png)
+
+![reference page](./images/zotero_annotations_metadata.png)
+
+And annotations will look like this but they can be customized:
+
+![annotations page](./images/zotero_annotations_annotations.png)
 
 ## Related  or Similar Plugins
 This work is inspired by the plugins mentioned in this section. I used all of them and didn't like some of the features. Or some functions that I wanted were not available. So I decided to borrow some of their code and make my own plugin. Thanks to the authors. Please try these plugins. They are great.

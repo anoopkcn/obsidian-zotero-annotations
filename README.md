@@ -44,7 +44,7 @@ If you wish to change the default style, you can make a custom CSS(Obsidian sett
 By default, annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 
 
 <details>
-<summary>Expand to see the custom template</summary>
+<summary>Expand to see the custom template(check the <a href="https://github.com/anoopkcn/obsidian-zotero-annotations/tree/main/templates" alt="templates">templates</a> directory for more)</summary>
 
 ```md
 ---

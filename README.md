@@ -43,7 +43,9 @@ If you wish to change the default style, you can make a custom CSS(Obsidian sett
 ## Settings
 By default, annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 
 
-Following is an example of a custom template:
+<details>
+<summary>Expand to see the custom template</summary>
+
 ```md
 ---
 CiteKey: {{citationKey}}
@@ -89,8 +91,9 @@ tags: reference
 ## Annotations
 {{PDFNotes}}
 ```
+</details>
 
-The above template will produce the following note:
+This template will produce the following note:
 
 ![reference page](./images/zotero_annotations_metadata.png)
 

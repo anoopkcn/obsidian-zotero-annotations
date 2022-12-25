@@ -8,88 +8,93 @@ export function getAnnotationType(
     settings: PluginSettings
 ) {
     const {
-        keyMergeAbove,
-        keyCommentPrepend,
-        keyH1,
-        keyH2,
-        keyH3,
-        keyH4,
-        keyH5,
-        keyH6,
-        keyKeyword,
-        keyTask,
+        formatMergeAbove,
+        formatCommentPrepend,
+        formatH1,
+        formatH2,
+        formatH3,
+        formatH4,
+        formatH5,
+        formatH6,
+        formatKeyword,
+        formatTask,
     } = settings;
 
     //Take the lower cap version
     annotationCommentFirstWord = annotationCommentFirstWord.toLowerCase();
 
-    let annotationType = "noKey";
-    if (
-        annotationCommentFirstWord === keyMergeAbove.toLowerCase() ||
-        annotationCommentAll === keyMergeAbove
-    ) {
-        annotationType = "typeMergeAbove";
-    } else if (
-        annotationCommentFirstWord === keyCommentPrepend.toLowerCase()
-    ) {
-        annotationType = "typeCommentPrepend";
-    } else if (annotationCommentFirstWord === keyH1.toLowerCase()) {
-        annotationType = "typeH1";
-    } else if (annotationCommentFirstWord === keyH2.toLowerCase()) {
-        annotationType = "typeH2";
-    } else if (annotationCommentFirstWord === keyH3.toLowerCase()) {
-        annotationType = "typeH3";
-    } else if (annotationCommentFirstWord === keyH4.toLowerCase()) {
-        annotationType = "typeH4";
-    } else if (annotationCommentFirstWord === keyH5.toLowerCase()) {
-        annotationType = "typeH5";
-    } else if (annotationCommentFirstWord === keyH6.toLowerCase()) {
-        annotationType = "typeH6";
+    let annotationType = "noFormat";
+
+    switch (annotationCommentFirstWord) {
+        case formatMergeAbove.toLowerCase():
+            annotationType = "typeMergeAbove";
+            break;
+        case formatCommentPrepend.toLowerCase():
+            annotationType = "typeCommentPrepend";
+            break;
+        case formatH1.toLowerCase():
+            annotationType = "typeH1";
+            break;
+        case formatH2.toLowerCase():
+            annotationType = "typeH2";
+            break;
+        case formatH3.toLowerCase():
+            annotationType = "typeH3";
+            break;
+        case formatH4.toLowerCase():
+            annotationType = "typeH4";
+            break;
+        case formatH5.toLowerCase():
+            annotationType = "typeH5";
+            break;
+        case formatH6.toLowerCase():
+            annotationType = "typeH6";
+            break;
+        default:
+            annotationType = "noFormat";
     }
 
-    if (annotationCommentAll === keyH1.toLowerCase()) {
-        annotationType = "typeH1";
-    } else if (annotationCommentAll === keyH2.toLowerCase()) {
-        annotationType = "typeH2";
-    } else if (annotationCommentAll === keyH3.toLowerCase()) {
-        annotationType = "typeH3";
-    } else if (annotationCommentAll === keyH4.toLowerCase()) {
-        annotationType = "typeH4";
-    } else if (annotationCommentAll === keyH5.toLowerCase()) {
-        annotationType = "typeH5";
-    } else if (annotationCommentAll === keyH6.toLowerCase()) {
-        annotationType = "typeH6";
-    } else if (
-        annotationCommentAll === keyKeyword.toLowerCase() ||
-        annotationCommentFirstWord === keyKeyword.toLowerCase()
-    ) {
-        annotationType = "typeKeyword";
-    } else if (
-        annotationCommentAll === keyTask.toLowerCase() ||
-        annotationCommentFirstWord === keyTask.toLowerCase()
-    ) {
-        annotationType = "typeTask";
+    // re-write above if statement to use a switch statement
+    switch (annotationCommentAll) {
+        case formatH1.toLowerCase():
+            annotationType = "typeH1";
+            break;
+        case formatH2.toLowerCase():
+            annotationType = "typeH2";
+            break;
+        case formatH3.toLowerCase():
+            annotationType = "typeH3";
+            break;
+        case formatH4.toLowerCase():
+            annotationType = "typeH4";
+            break;
+        case formatH5.toLowerCase():
+            annotationType = "typeH5";
+            break;
+        case formatH6.toLowerCase():
+            annotationType = "typeH6";
+            break;
+        case formatKeyword.toLowerCase():
+            annotationType = "typeKeyword";
+            break;
+        case formatTask.toLowerCase():
+            annotationType = "typeTask";
+            break;
     }
+    if (annotationCommentAll === formatMergeAbove) annotationType = "typeMergeAbove";
+    if (annotationCommentFirstWord === formatKeyword.toLowerCase()) annotationType = "typeKeyword";
+    if (annotationCommentFirstWord === formatTask.toLowerCase()) annotationType = "typeTask";
+
     return annotationType;
 }
 
 export function getExtractionType(note: string) {
     //Identify the extraction Type (Zotero vs. Zotfile)
-    let extractionType = undefined;
-
-    if (unescape(note).includes("<span class=")) {
-        extractionType = "Zotero";
-    } else if (
-        unescape(note).includes('<a href="zotero://open-pdf/library/')
-    ) {
-        extractionType = "Zotfile";
-    }
+    let extractionType = "Other";
+    if (note.includes("<span class=")) extractionType = "Zotero";
+    if (note.includes('<a href="zotero://open-pdf/library/')) extractionType = "Zotfile";
     //Identify manual notes (not extracted from PDF) extracted from zotero
-    else if (unescape(note).includes("div data-schema-version")) {
-        extractionType = "UserNote";
-    } else {
-        extractionType = "Other";
-    }
+    if (note.includes("div data-schema-version")) extractionType = "UserNote";
     return extractionType;
 }
 
@@ -227,8 +232,7 @@ export function parseMetadata(selectedEntry: Reference, settings: PluginSettings
 
     //Create field ZoteroLocalLibrary
     if (selectedEntry.hasOwnProperty("select")) {
-        selectedEntry.localLibrary =
-            "[Zotero](" + selectedEntry.select + ")";
+        selectedEntry.localLibrary = "[Zotero](" + selectedEntry.select + ")";
         selectedEntry.localLibraryLink = selectedEntry.select;
     }
 
@@ -236,76 +240,26 @@ export function parseMetadata(selectedEntry: Reference, settings: PluginSettings
     selectedEntry.itemType = camelToNormalCase(selectedEntry.itemType);
 
     // Create in-line citation (e.g. Collier, Laporte and Seawright (2009))
-    selectedEntry.citationInLine =
-        createAuthorKey(selectedEntry.creators) +
-        " " +
-        "(" +
-        selectedEntry.year +
-        ")";
-    selectedEntry.citationInLine = selectedEntry.citationInLine.replace(
-        "()",
-        ""
-    );
+    selectedEntry.citationInLine = `${createAuthorKey(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLine = selectedEntry.citationInLine.replace("()", "");
 
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
-    selectedEntry.citationInLineInitials =
-        createAuthorKeyInitials(selectedEntry.creators) +
-        " " +
-        "(" +
-        selectedEntry.year +
-        ")";
-    selectedEntry.citationInLineInitials =
-        selectedEntry.citationInLineInitials.replace("()", "");
+    selectedEntry.citationInLineInitials = `${createAuthorKeyInitials(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLineInitials = selectedEntry.citationInLineInitials.replace("()", "");
 
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
-    selectedEntry.citationInLineFullName =
-        createAuthorKeyFullName(selectedEntry.creators) +
-        " " +
-        "(" +
-        selectedEntry.year +
-        ")";
-    selectedEntry.citationInLineFullName =
-        selectedEntry.citationInLineFullName.replace("()", "");
+    selectedEntry.citationInLineFullName = `${createAuthorKeyFullName(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLineFullName = selectedEntry.citationInLineFullName.replace("()", "");
 
     // Replace short and full citation
     if (selectedEntry.itemType == "Journal Article") {
-        selectedEntry.citationShort =
-            selectedEntry.citationInLine +
-            " " +
-            "'" +
-            selectedEntry.title +
-            "'";
-        selectedEntry.citationFull =
-            selectedEntry.citationShort +
-            ", " +
-            "*" +
-            selectedEntry.publicationTitle +
-            "*" +
-            ", " +
-            selectedEntry.volume +
-            "(" +
-            selectedEntry.issue +
-            "), " +
-            "pp. " +
-            selectedEntry.pages +
-            ".";
+        selectedEntry.citationShort = `${selectedEntry.citationInLine} '${selectedEntry.title}'`;
+        selectedEntry.citationFull = `${selectedEntry.citationShort}, *${selectedEntry.publicationTitle}*, ${selectedEntry.volume}(${selectedEntry.issue}), pp. ${selectedEntry.pages}.`;
 
-        selectedEntry.citationFull = selectedEntry.citationFull.replace(
-            "() ",
-            ""
-        );
-        selectedEntry.citationShort = selectedEntry.citationShort.replace(
-            "** ",
-            ""
-        );
-        selectedEntry.citationFull = selectedEntry.citationFull.replace(
-            "** ",
-            ""
-        );
-        selectedEntry.citationFull = selectedEntry.citationFull.replace(
-            "pp. ",
-            ""
-        );
+        selectedEntry.citationFull = selectedEntry.citationFull.replace("() ", "");
+        selectedEntry.citationShort = selectedEntry.citationShort.replace("** ", "");
+        selectedEntry.citationFull = selectedEntry.citationFull.replace("** ", "");
+        selectedEntry.citationFull = selectedEntry.citationFull.replace("pp. ", "");
     }
 
     //create field file
@@ -327,8 +281,6 @@ export function parseMetadata(selectedEntry: Reference, settings: PluginSettings
     return note;
 }
 
-
-
 // FUNCTION TO PARSE ANNOTATION
 export function parseAnnotationLinesintoElementsZotfile(note: string, settings: PluginSettings) {
     //Split the note into lines
@@ -338,15 +290,10 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
         //Remote html tags
         const selectedLineOriginal = lines[indexLines];
 
-        const selectedLine = selectedLineOriginal.replace(
-            /<\/?[^>]+(>|$)/g,
-            ""
-        );
+        const selectedLine = selectedLineOriginal.replace(/<\/?[^>]+(>|$)/g, "");
 
         //Skip if empty
-        if (selectedLine === "") {
-            continue;
-        }
+        if (selectedLine === "") continue;
 
         //Crety empty lineElements
         //@ts-ignore
@@ -392,40 +339,26 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
             // Remove quotation marks from extractedText
             ["“", '"', "`", "'"].forEach(
                 (quote) =>
-                (extractedText = removeQuoteFromStart(
-                    quote,
-                    extractedText
-                ))
+                    (extractedText = removeQuoteFromStart(quote, extractedText))
             );
             ["”", '"', "`", "'"].forEach(
                 (quote) =>
-                (extractedText = removeQuoteFromEnd(
-                    quote,
-                    extractedText
-                ))
+                    (extractedText = removeQuoteFromEnd(quote, extractedText))
             );
         }
 
         //Extracte the Zotero backlink
+        let searchRegex = /zotero:\/\/open-pdf\/library\/items\/\S+page=\d+/g
         lineElements.zoteroBackLink = "";
-        if (
-            /zotero:\/\/open-pdf\/library\/items\/\S+page=\d+/g.test(
-                selectedLineOriginal
-            )
-        ) {
-            const zoteroBackLink = String(
-                selectedLineOriginal.match(
-                    /zotero:\/\/open-pdf\/library\/items\/\S+page=\d+/g
-                )
-            );
+        if (searchRegex.test(selectedLineOriginal)) {
+            const zoteroBackLink = String(selectedLineOriginal.match(searchRegex));
             lineElements.zoteroBackLink = zoteroBackLink;
         }
 
         //Extract the page of the annotation in the publication
-        if (/(\d+)(?!.*\d)/g.test(selectedLineOriginal)) {
-            const pageLabel = String(
-                selectedLineOriginal.match(/(\d+)(?!.*\d)/g)
-            );
+        searchRegex = /(\d+)(?!.*\d)/g
+        if (searchRegex.test(selectedLineOriginal)) {
+            const pageLabel = String(selectedLineOriginal.match(searchRegex));
             if (pageLabel == null) {
                 lineElements.pageLabel = null;
             } else {
@@ -448,13 +381,8 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
         let annotationCommentFirstWord = "";
         if (lineElements.commentText.length > 0) {
             firstBlank = lineElements.commentText.indexOf(" ");
-            if (firstBlank === -1) {
-                firstBlank = lineElements.commentText.length;
-            }
-            annotationCommentFirstWord = lineElements.commentText.substring(
-                0,
-                firstBlank
-            );
+            if (firstBlank === -1) { firstBlank = lineElements.commentText.length; }
+            annotationCommentFirstWord = lineElements.commentText.substring(0, firstBlank);
         }
 
         lineElements.annotationType = getAnnotationType(
@@ -466,7 +394,7 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
             firstBlank = annotationCommentAll.length;
         }
         lineElements.commentText =
-            lineElements.annotationType === "noKey"
+            lineElements.annotationType === "noFormat"
                 ? lineElements.commentText
                 : lineElements.commentText
                     .substring(
@@ -479,9 +407,9 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
 
         if (noteElements.length > 1) {
             if (
-                lineElements.annotationType != "noKey" &&
+                lineElements.annotationType != "noFormat" &&
                 noteElements[noteElements.length - 1].annotationType ===
-                "noKey" &&
+                "noFormat" &&
                 noteElements[noteElements.length - 1].commentText === ""
             ) {
                 noteElements[noteElements.length - 1].annotationType =
@@ -499,9 +427,7 @@ export function parseAnnotationLinesintoElementsZotfile(note: string, settings: 
 
 
 export function parseAnnotationLinesintoElementsUserNote(note: string) {
-    note = note
-        // Replace backticks
-        .replace(/`/g, "'")
+    note = note.replace(/`/g, "'")
         // Correct when zotero exports wrong key (e.g. Author, date, p. p. pagenum)
         .replace(/, p. p. /g, ", p. ")
         .trim();
@@ -568,16 +494,7 @@ export function parseAnnotationLinesintoElementsUserNote(note: string) {
 
 export function parseAnnotationLinesintoElementsZotero(note: string, settings: PluginSettings) {
     // clean the entire annotation
-    note = note
-        // .replace(
-        // 	Remove HTML tags
-        // 	HTML_TAG_REG,
-        // 	"")
-        // 	Replace backticks
-        .replace(/`/g, "'")
-        // Correct when zotero exports wrong key (e.g. Author, date, p. p. pagenum)
-        .replace(/, p. p. /g, ", p. ")
-        .trim();
+    note = note.replace(/`/g, "'").replace(/, p. p. /g, ", p. ").trim();
     // Split the annotations into an array where each row is an entry
     const lines = note.split(/<\/h1>|<\/p>|<h1>/gm);
     const noteElements: AnnotationElements[] = [];
@@ -593,7 +510,6 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
         );
         // 	// Replace backticks with single quote
         selectedLine = replaceTemplate(selectedLine, "`", "'");
-        //selectedLine = replaceTemplate(selectedLine, "/<i/>", "");
         // 	// Correct encoding issues
         selectedLine = replaceTemplate(selectedLine, "&amp;", "&");
 
@@ -628,21 +544,15 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
         //Identify images
         if (/data-attachment-key=/gm.test(selectedLineOriginal)) {
             lineElements.annotationType = "typeImage";
-            lineElements.imagePath = String(
-                selectedLineOriginal.match(/key="([^"]*)"/g)[0]
-            )
+            lineElements.imagePath = String(selectedLineOriginal.match(/key="([^"]*)"/g)[0])
                 .replaceAll('"', "")
                 .replace("key=", "");
         }
 
         //Extract the colour of the highlight
         if (/"color":"#......"/gm.test(selectedLineOriginal)) {
-            let highlightColour = String(
-                selectedLineOriginal.match(/"color":"#......"/gm)
-            );
-            if (highlightColour == null) {
-                highlightColour = "";
-            }
+            let highlightColour = String(selectedLineOriginal.match(/"color":"#......"/gm));
+            if (highlightColour == null) highlightColour = "";
             highlightColour = highlightColour.replace('color":', "");
             highlightColour = highlightColour.replace('"', "");
             lineElements.highlightColour = highlightColour;
@@ -651,25 +561,19 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
         // Extract the location of the annotation in the PDF
         // "locator":"12345"
         if (/"locator":"\d+"/gm.test(selectedLineOriginal)) {
-            let pagePDF = String(
-                // sometimes there are more than one locator
-                selectedLineOriginal.match(/"locator":"\d+"/gm)[0]
-            );
+            let pagePDF = String(selectedLineOriginal.match(/"locator":"\d+"/gm)[0]);
             if (pagePDF == null) {
                 lineElements.pagePDF = null;
             } else {
                 pagePDF = pagePDF.replace('"locator":', "");
                 pagePDF = pagePDF.replaceAll('"', "");
                 lineElements.pagePDF = Number(pagePDF);
-
             }
         }
 
         //Extract the page of the annotation in the publication
         if (/"pageLabel":"\d+/g.test(selectedLineOriginal)) {
-            let pageLabel = String(
-                selectedLineOriginal.match(/"pageLabel":"\d+/g)
-            );
+            let pageLabel = String(selectedLineOriginal.match(/"pageLabel":"\d+/g));
             if (pageLabel == null) {
                 lineElements.pageLabel = null;
             } else {
@@ -679,85 +583,57 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
         }
 
         //Extract the attachment URI
+        let searchRegex = /attachmentURI":"http:\/\/zotero\.org\/users\/\d+\/items\/\w+/gm;
+        let replaceRegex = /attachmentURI":"http:\/\/zotero\.org\/users\/\d+\/items\//gm;
+        let matchRegex;
 
-        if (
-            /attachmentURI":"http:\/\/zotero\.org\/users\/\d+\/items\/\w+/gm.test(
-                selectedLineOriginal
-            )
-        ) {
+        if (searchRegex.test(selectedLineOriginal)) {
             let attachmentURI = String(
-                selectedLineOriginal.match(
-                    /attachmentURI":"http:\/\/zotero\.org\/users\/\d+\/items\/\w+/gm
-                )
+                selectedLineOriginal.match(searchRegex)
             );
             if (attachmentURI === null) {
                 lineElements.attachmentURI = null;
             } else {
-                attachmentURI = attachmentURI.replace(
-                    /attachmentURI":"http:\/\/zotero\.org\/users\/\d+\/items\//gm,
-                    ""
-                );
+                attachmentURI = attachmentURI.replace(replaceRegex, "");
                 lineElements.attachmentURI = attachmentURI;
             }
         }
 
-        if (
-            /"attachmentURI":"http:\/\/zotero.org\/users\/local\/[a-zA-Z0-9]*\/items\/[a-zA-Z0-9]*/gm.test(
-                selectedLineOriginal
-            )
-        ) {
+        searchRegex = /"attachmentURI":"http:\/\/zotero.org\/users\/local\/[a-zA-Z0-9]*\/items\/[a-zA-Z0-9]*/gm
+        replaceRegex = /"attachmentURI":"http:\/\/zotero.org\/users\/local\/[a-zA-Z0-9]*\/items\//gm
+        if (searchRegex.test(selectedLineOriginal)) {
             let attachmentURI = String(
-                selectedLineOriginal.match(
-                    /"attachmentURI":"http:\/\/zotero.org\/users\/local\/[a-zA-Z0-9]*\/items\/[a-zA-Z0-9]*/gm
-                )
-            );
+                selectedLineOriginal.match(searchRegex));
             if (attachmentURI === null) {
                 lineElements.attachmentURI = null;
             } else {
-                attachmentURI = attachmentURI.replace(
-                    /"attachmentURI":"http:\/\/zotero.org\/users\/local\/[a-zA-Z0-9]*\/items\//gm,
-                    ""
-                );
+                attachmentURI = attachmentURI.replace(replaceRegex, "");
                 lineElements.attachmentURI = attachmentURI;
             }
         }
 
-        if (
-            /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\/\w+/gm.test(
-                selectedLineOriginal
-            ) &&
-            lineElements.attachmentURI == ""
-        ) {
-            let attachmentURI = String(
-                selectedLineOriginal.match(
-                    /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\/\w+/g
-                )
-            );
+        searchRegex = /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\/\w+/gm;
+        replaceRegex = /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\//g;
+        matchRegex = /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\/\w+/g;
+        if (searchRegex.test(selectedLineOriginal) && lineElements.attachmentURI == "") {
+            let attachmentURI = String(selectedLineOriginal.match(matchRegex));
             if (attachmentURI === null) {
                 lineElements.attachmentURI = null;
             } else {
-                attachmentURI = attachmentURI.replace(
-                    /"uris":\["http:\/\/zotero\.org\/users\/\d+\/items\//g,
-                    ""
-                );
+                attachmentURI = attachmentURI.replace(replaceRegex, "");
                 lineElements.attachmentURI = attachmentURI;
             }
         }
 
         //Create the zotero backlink
-        if (/"annotationKey":"[a-zA-Z0-9]+/gm.test(selectedLineOriginal)) {
-            let annotationKey = String(
-                selectedLineOriginal.match(
-                    /"annotationKey":"[a-zA-Z0-9]+/gm
-                )
-            );
+        searchRegex = /"annotationKey":"[a-zA-Z0-9]+/gm;
+        replaceRegex = /"annotationKey":"/gm
+        if (searchRegex.test(selectedLineOriginal)) {
+            let annotationKey = String(selectedLineOriginal.match(searchRegex));
             if (annotationKey === null) {
                 lineElements.annotationKey = null;
             } else {
-                annotationKey = annotationKey.replace(
-                    /"annotationKey":"/gm,
-                    ""
-                );
+                annotationKey = annotationKey.replace(replaceRegex, "");
                 lineElements.annotationKey = annotationKey;
             }
         }
@@ -766,75 +642,43 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
             lineElements.pagePDF !== null &&
             lineElements.annotationKey !== null
         ) {
-            lineElements.zoteroBackLink =
-                "zotero://open-pdf/library/items/" +
-                lineElements.attachmentURI +
-                "?page=" +
-                lineElements.pagePDF +
-                "&annotation=" +
-                lineElements.annotationKey;
+            lineElements.zoteroBackLink = 
+                `zotero://open-pdf/library/items/${lineElements.attachmentURI}?page=${lineElements.pagePDF}&annotation=${lineElements.annotationKey}`;
         }
         //Extract the citation within bracket
-        if (
-            /\(<span class="citation-item">.*<\/span>\)<\/span>/gm.test(
-                selectedLineOriginal
-            )
+        searchRegex = /\(<span class="citation-item">.*<\/span>\)<\/span>/gm;
+        if (searchRegex.test(selectedLineOriginal)
         ) {
-            lineElements.citeKey = String(
-                selectedLineOriginal.match(
-                    /\(<span class="citation-item">.*<\/span>\)<\/span>/gm
-                )
-            );
-            lineElements.citeKey = lineElements.citeKey.replace(
-                '(<span class="citation-item">',
-                ""
-            );
-            lineElements.citeKey = lineElements.citeKey.replace(
-                "</span>)</span>",
-                ""
-            );
-            lineElements.citeKey = "(" + lineElements.citeKey + ")";
+            lineElements.citeKey = String(selectedLineOriginal.match(searchRegex))
+                .replace('(<span class="citation-item">', "")
+                .replace("</span>)</span>", "");
+            lineElements.citeKey = `(${lineElements.citeKey})`
         }
         //Find the position where the CiteKey begins
         const beginningCiteKey = selectedLine.indexOf(lineElements.citeKey);
 
         //Find the position where the citekey ends
-        const endCiteKey =
-            selectedLine.indexOf(lineElements.citeKey) +
-            lineElements.citeKey.length;
+        const endCiteKey = selectedLine.indexOf(lineElements.citeKey) + lineElements.citeKey.length;
 
         //Extract the text of the annotation
+        replaceRegex = /((?<=\p{Unified_Ideograph})\s*(?=\p{Unified_Ideograph}))/gu;
         if (endCiteKey !== 0) {
-            lineElements.highlightText = selectedLine
-                .substring(0, beginningCiteKey - 1)
-                .trim();
-            lineElements.highlightText = lineElements.highlightText.replace(
-                /((?<=\p{Unified_Ideograph})\s*(?=\p{Unified_Ideograph}))/gu,
-                ""
-            );
-
+            lineElements.highlightText = selectedLine.substring(0, beginningCiteKey - 1).trim();
+            lineElements.highlightText = lineElements.highlightText.replace(replaceRegex, "");
             // Remove quotation marks from annotationHighlight
             ["“", '"', "`", "'"].forEach(
                 (quote) =>
-                (lineElements.highlightText = removeQuoteFromStart(
-                    quote,
-                    lineElements.highlightText
-                ))
+                    (lineElements.highlightText = removeQuoteFromStart(quote, lineElements.highlightText))
             );
             ["”", '"', "`", "'"].forEach(
                 (quote) =>
-                (lineElements.highlightText = removeQuoteFromEnd(
-                    quote,
-                    lineElements.highlightText
-                ))
+                    (lineElements.highlightText = removeQuoteFromEnd(quote, lineElements.highlightText))
             );
         }
 
         //Extract the comment made to an annotation (after the citeKey)
         if (endCiteKey > 0) {
-            const annotationCommentAll = selectedLine
-                .substring(endCiteKey + 1)
-                .trim();
+            const annotationCommentAll = selectedLine.substring(endCiteKey + 1).trim();
 
             // 	Extract the first word in the comment added to the annotation
             let firstBlank = annotationCommentAll.indexOf(" ");
@@ -844,88 +688,51 @@ export function parseAnnotationLinesintoElementsZotero(note: string, settings: P
                 annotationCommentAll.substring(0, firstBlank);
             // Identify what type of annotation is based on the first word
             if (lineElements.annotationType !== "typeImage") {
-                lineElements.annotationType = getAnnotationType(
-                    annotationCommentFirstWord,
-                    annotationCommentAll,
-                    settings
-                );
+                lineElements.annotationType = getAnnotationType(annotationCommentFirstWord, annotationCommentAll, settings);
             }
 
             // Extract the comment without the initial key and store it in
             lineElements.commentText = "";
-            if (firstBlank == -1) {
-                firstBlank = annotationCommentAll.length;
-            }
+            if (firstBlank == -1) firstBlank = annotationCommentAll.length;
             lineElements.commentText =
-                lineElements.annotationType === "noKey" ||
+                lineElements.annotationType === "noFormat" ||
                     lineElements.annotationType === "typeImage"
                     ? annotationCommentAll
-                    : annotationCommentAll
-                        .substring(
-                            firstBlank,
-                            annotationCommentAll.length
-                        )
-                        .trim();
+                    : annotationCommentAll.substring(firstBlank, annotationCommentAll.length).trim();
 
             //Extract the tags
-
             //check if the inline tags are found in the text of the comment
-            if (
-                lineElements.commentText.includes(
-                    settings.TagBeginningConfig
-                )
-            ) {
-                //if the tags are at the end of the comment, tehn extract the text between the beginning of the tag and the end of the comment
+            if (lineElements.commentText.includes(settings.TagBeginningConfig)) {
+                //if the tags are at the end of the comment,
+                //then extract the text between the beginning of the tag and the end of the comment
                 if (settings.TagEndConfig.length == 0) {
-                    lineElements.inlineTagsText =
-                        lineElements.commentText.slice(
-                            lineElements.commentText.indexOf(
-                                settings.TagBeginningConfig
-                            ),
+                    lineElements.inlineTagsText = lineElements.commentText
+                        .slice(
+                            lineElements.commentText.indexOf(settings.TagBeginningConfig),
                             lineElements.commentText.length
                         );
                 } else {
-                    //if the tags are in the middle/beginning of the comment, tehn extract the text between the beginning of the tag and the specified end  of the tag
-                    lineElements.inlineTagsText =
-                        lineElements.commentText.slice(
-                            lineElements.commentText.indexOf(
-                                settings.TagBeginningConfig
-                            ),
-                            lineElements.commentText.lastIndexOf(
-                                settings.TagEndConfig
-                            )
+                    //if the tags are in the middle/beginning of the comment, 
+                    // then extract the text between the beginning of the tag and the specified end  of the tag
+                    lineElements.inlineTagsText = lineElements.commentText
+                        .slice(
+                            lineElements.commentText.indexOf(settings.TagBeginningConfig),
+                            lineElements.commentText.lastIndexOf(settings.TagEndConfig)
                         );
                 }
-
                 //Remove the tags from the comment
-                lineElements.commentText = lineElements.commentText
-                    .replace(lineElements.inlineTagsText, "")
-                    .trim();
+                lineElements.commentText = lineElements.commentText.replace(lineElements.inlineTagsText, "").trim();
             }
 
             //Check if there are any tags before performing manipulations of inlineTagsText
-
             if (typeof lineElements.inlineTagsText !== `undefined`) {
                 //Remove the tag beginning and end marker from the inlineTagsText
-                lineElements.inlineTagsText =
-                    lineElements.inlineTagsText.replace(
-                        settings.TagBeginningConfig,
-                        ""
-                    );
-
+                lineElements.inlineTagsText = lineElements.inlineTagsText.replace(settings.TagBeginningConfig, "");
                 if (settings.TagEndConfig.length != 0) {
-                    lineElements.inlineTagsText =
-                        lineElements.inlineTagsText.replace(
-                            settings.TagEndConfig,
-                            ""
-                        );
+                    lineElements.inlineTagsText = lineElements.inlineTagsText.replace(settings.TagEndConfig, "");
                 }
-
                 //Split the different tags in an array if there are tags
-                lineElements.inlineTagsArray =
-                    lineElements.inlineTagsText.split(
-                        settings.TagDividerConfig
-                    );
+                lineElements.inlineTagsArray = lineElements.inlineTagsText.split(settings.TagDividerConfig);
             }
         } else {
             lineElements.rowEdited = selectedLine;

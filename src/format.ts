@@ -440,7 +440,7 @@ export function formatNoteElements(
 
         //FORMAT HIGHLIGHTED SENTENCES WITHOUT ANY COMMENT
         //OR WITHOUT ANY SPECIAL CONSIDERATIONS
-        if (lineElements.annotationType === "noKey") {
+        if (lineElements.annotationType === "noFormat") {
             lineElements.rowEdited = lineElements.colourTemplateFormatted;
         }
 

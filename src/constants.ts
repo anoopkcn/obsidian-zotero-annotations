@@ -1,4 +1,4 @@
-import { PluginSettings } from "./types";
+import { ZoteroAnnotationsPluginSettings } from "./types";
 
 export const templatePlain = `
 # {{title}}
@@ -45,7 +45,7 @@ export const templatePlain = `
 {{PDFNotes}}
 `;
 
-export const DEFAULT_SETTINGS: PluginSettings = {
+export const DEFAULT_SETTINGS: ZoteroAnnotationsPluginSettings = {
     bibPath: "",
     templateContent: templatePlain,
     templatePath: "",

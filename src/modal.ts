@@ -20,6 +20,7 @@ import {
     createNoteTitle,
     openNoteAfterImport,
     orderByDateModified,
+    resolvePath,
     truncate,
 } from "./utils";
 
@@ -55,23 +56,14 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
 
         // Load the JSON file
         // Check if the file exists
-        const jsonPath =
-            //@ts-ignore
-            this.app.vault.adapter.getBasePath() +
-            "/" +
-            this.plugin.settings.bibPath;
+        const jsonPath = resolvePath(this.plugin.settings.bibPath)
         if (!fs.existsSync(jsonPath)) {
             new Notice("No BetterBibTeX JSON file found at " + jsonPath);
         }
 
         //Create the full path to the json file
-        const rawdata = fs.readFileSync(
-            //@ts-ignore
-            this.app.vault.adapter.getBasePath() +
-                "/" +
-                this.plugin.settings.bibPath
-        );
-        const data = JSON.parse(rawdata.toString()); // rawdata is a buffer, convert to string
+        const rawdata = fs.readFileSync(jsonPath)
+        const data = JSON.parse(rawdata.toString())
 
 
         const bibtexArray: Reference[] = [];
@@ -212,25 +204,14 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
             );
 
             //Selected Reference
-            const selectedEntry: Reference =
-                this.data.items[indexSelectedReference];
+            const selectedEntry: Reference = this.data.items[indexSelectedReference];
 
             //Create and export Note for select reference
             createNote(selectedEntry, this.plugin.settings)
 
             //open note  after import
-            const noteTitleFull = createNoteTitle(
-                selectedEntry,
-                this.plugin.settings.importFileName,
-                this.plugin.settings.importPath
-            );
-            const noteTitleShort = noteTitleFull.replace(
-                //@ts-ignore
-                normalizePath(this.app.vault.adapter.getBasePath()) + "/",
-                ""
-            );
-            // console.log(noteTitleShort)
-            const myFile = this.app.metadataCache.getFirstLinkpathDest(normalizePath(noteTitleShort), "")
+            const noteTitle = createNoteTitle(selectedEntry, this.plugin.settings.importFileName);
+            const myFile = this.app.metadataCache.getFirstLinkpathDest(normalizePath(noteTitle), "")
             openNoteAfterImport(myFile, this.plugin.settings.openAfterImport)
         }
     }

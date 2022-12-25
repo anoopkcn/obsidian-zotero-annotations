@@ -1,16 +1,24 @@
-import { Notice, TFile, normalizePath } from "obsidian";
+import { FileSystemAdapter, Notice, TFile, normalizePath } from "obsidian";
 import * as fs from "fs";
 import path from "path";
 import {
     Creator,
     CreatorArray,
-    PluginSettings,
+    ZoteroAnnotationsPluginSettings,
     Reference,
 } from "./types";
 
 
 import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
 import { extractAnnotation, parseMetadata } from "./parser";
+
+export function resolvePath(rawPath: string): string {
+    const vaultRoot =
+        this.app.vault.adapter instanceof FileSystemAdapter
+            ? this.app.vault.adapter.getBasePath()
+            : '/';
+    return path.normalize(path.resolve(vaultRoot, rawPath))
+}
 
 // convert camelCase to Normal Case
 export function camelToNormalCase(str: string) {
@@ -33,7 +41,7 @@ export function truncate(str: string, n: number) {
 
 
 // import template from file if present or set it to the default template
-export async function importTemplate(settings: PluginSettings): Promise<string> {
+export async function importTemplate(settings: ZoteroAnnotationsPluginSettings): Promise<string> {
     const template = this.app.metadataCache.getFirstLinkpathDest(
         normalizePath(settings.templatePath),
         ""
@@ -658,57 +666,28 @@ export function createLocalFileLink(reference: Reference) {
 
 export function createNoteTitle(
     selectedEntry: Reference,
-    exportTitle: string,
-    exportPath: string
+    exportTitle: string
 ) {
     //Replace the placeholders
-    exportTitle = exportTitle.replace("{{citeKey}}", selectedEntry.citationKey);
-    exportTitle = exportTitle.replace(
-        "{{citationKey}}",
-        selectedEntry.citationKey
-    );
-    exportTitle = exportTitle.replace(
-        "{{citationkey}}",
-        selectedEntry.citationKey
-    );
-    exportTitle = exportTitle.replace("{{citekey}}", selectedEntry.citationKey);
-    exportTitle = exportTitle.replace("{{citekey}}", selectedEntry.citationKey);
+    exportTitle = exportTitle
+        .replaceAll("{{citeKey}}", selectedEntry.citationKey)
+        .replaceAll("{{citationKey}}", selectedEntry.citationKey)
+        .replaceAll("{{title}}", selectedEntry.title)
+        .replaceAll("{{author}}", selectedEntry.authorKey)
+        .replaceAll("{{authors}}", selectedEntry.authorKey)
+        .replaceAll("{{authorInitials}}", selectedEntry.authorKeyInitials)
+        .replaceAll("{{authorsInitials}}", selectedEntry.authorKeyInitials)
+        .replaceAll("{{authorFullName}}", selectedEntry.authorKeyFullName)
+        .replaceAll("{{authorsFullName}}", selectedEntry.authorKeyFullName)
+        .replaceAll("{{year}}", selectedEntry.year)
+        .replaceAll("{{date}}", selectedEntry.year)
+        .replace(/[/\\?%*:|"<>]/g, "");
 
-    exportTitle = exportTitle.replace("{{title}}", selectedEntry.title);
+    return exportTitle;
+}
 
-    exportTitle = exportTitle.replace("{{author}}", selectedEntry.authorKey);
-    exportTitle = exportTitle.replace("{{authors}}", selectedEntry.authorKey);
-    exportTitle = exportTitle.replace(
-        "{{authorInitials}}",
-        selectedEntry.authorKeyInitials
-    );
-    exportTitle = exportTitle.replace(
-        "{{authorsInitials}}",
-        selectedEntry.authorKeyInitials
-    );
-    exportTitle = exportTitle.replace(
-        "{{authorFullName}}",
-        selectedEntry.authorKeyFullName
-    );
-    exportTitle = exportTitle.replace(
-        "{{authorsFullName}}",
-        selectedEntry.authorKeyFullName
-    );
-
-    exportTitle = exportTitle.replace("{{year}}", selectedEntry.year);
-    exportTitle = exportTitle.replace("{{date}}", selectedEntry.year);
-
-    //Remove special characters from the name of the file
-    exportTitle = exportTitle.replace(/[/\\?%*:|"<>]/g, "");
-
-    //Get the path of the vault
-    const vaultPath = this.app.vault.adapter.getBasePath();
-
-    const exportPathFull = path.normalize(
-        vaultPath + "/" + exportPath + "/" + exportTitle + ".md"
-    );
-
-    return exportPathFull;
+export function createNotePath(noteTitle: string, exportPath: string) {
+    return resolvePath(`${exportPath}/${noteTitle}.md`)
 }
 
 export function replaceTagList(
@@ -858,7 +837,7 @@ export function replaceTagList(
     return metadata;
 }
 
-export function zoteroAppInfo(selectedEntry: Reference, settings: PluginSettings) {
+export function zoteroAppInfo(selectedEntry: Reference, settings: ZoteroAnnotationsPluginSettings) {
 
     //Check the path to the data folder
     if (selectedEntry.attachments[0] !== undefined) {
@@ -924,7 +903,7 @@ export function compareOldNewNote(
     existingNote: string,
     newNote: string,
     authorKey: string,
-    settings: PluginSettings
+    settings: ZoteroAnnotationsPluginSettings
 ) {
     //Find the position of the line breaks in the old note
     const newLineRegex = RegExp(/\n/gm);
@@ -1156,7 +1135,7 @@ export function compareOldNewNote(
 }
 
 
-export async function createNote(selectedEntry: Reference, settings: PluginSettings): Promise<void> {
+export async function createNote(selectedEntry: Reference, settings: ZoteroAnnotationsPluginSettings): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
     const authorKey = createAuthorKey(selectedEntry.creators);
     // set the authorkey field (with or without first name) on the 
@@ -1176,17 +1155,10 @@ export async function createNote(selectedEntry: Reference, settings: PluginSetti
     let litnote: string = parseMetadata(selectedEntry, settings, templateNote);
 
     // Define the name and full path of the file to be exported
-    const noteTitleFull = createNoteTitle(
-        selectedEntry,
-        settings.importFileName,
-        settings.importPath
-    );
+    const noteTitle = createNoteTitle(selectedEntry, settings.importFileName,);
+    const notePath = createNotePath(noteTitle, settings.importPath)
     // Extract the annotation and the keyword from the text
-    const resultAnnotations = extractAnnotation(
-        selectedEntry,
-        noteTitleFull,
-        settings
-    );
+    const resultAnnotations = extractAnnotation(selectedEntry, notePath, settings);
 
     // Replace annotations in the template
     litnote = litnote.replace(
@@ -1226,12 +1198,12 @@ export async function createNote(selectedEntry: Reference, settings: PluginSetti
     // Check the option in settings.saveManualEdits.
     if (
         settings.saveManualEdits !== "Overwrite Entire Note" &&
-        fs.existsSync(noteTitleFull)
+        fs.existsSync(notePath)
     ) {
         // In that case compare existing file with new notes. If false don't look at existing note
         // Check if an old version exists. If the old version has annotations then add the new annotation to the old annotaiton
 
-        const existingNoteAll = String(fs.readFileSync(noteTitleFull));
+        const existingNoteAll = String(fs.readFileSync(notePath));
 
         litnote = compareOldNewNote(
             existingNoteAll,
@@ -1240,7 +1212,7 @@ export async function createNote(selectedEntry: Reference, settings: PluginSetti
             settings
         );
     }
-    fs.writeFile(noteTitleFull, litnote, err => {
+    fs.writeFile(notePath, litnote, err => {
         if (err) {
             console.error(err);
             return;
@@ -1250,7 +1222,7 @@ export async function createNote(selectedEntry: Reference, settings: PluginSetti
 }
 
 
-export function updateNotes(settings: PluginSettings) {
+export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
     console.log("Updating Zotero library");
     // get basepath
     //@ts-ignore
@@ -1303,11 +1275,7 @@ export function updateNotes(settings: PluginSettings) {
         if (
             settings.updateNotes === "Only existing notes" &&
             !fs.existsSync(
-                createNoteTitle(
-                    selectedEntry,
-                    settings.importFileName,
-                    settings.importPath
-                )
+                createNotePath(createNoteTitle(selectedEntry, settings.importFileName), settings.importPath)
             )
         )
             continue;

@@ -1,10 +1,11 @@
 
 import * as fs from "fs";
 import path from "path";
-import { AnnotationElements, PluginSettings, ZoteroInfo } from "./types";
+import { AnnotationElements, ZoteroAnnotationsPluginSettings, ZoteroInfo } from "./types";
 import { Notice, normalizePath } from "obsidian";
+import { resolvePath } from "./utils";
 
-export function createFormatting(settings: PluginSettings) {
+export function createFormatting(settings: ZoteroAnnotationsPluginSettings) {
     const {
         highlightCustomTextAfter,
         highlightCustomTextBefore,
@@ -126,7 +127,7 @@ export function createFormatting(settings: PluginSettings) {
 export function formatNoteElements(
     noteElements: AnnotationElements[],
     citeKey: string,
-    settings: PluginSettings,
+    settings: ZoteroAnnotationsPluginSettings,
     zoteroInfo: ZoteroInfo
 ) {
     const { isDoubleSpaced } = settings;
@@ -428,10 +429,7 @@ export function formatNoteElements(
 
                 pathImageNew = path.normalize(
                     path.format({
-                        dir: normalizePath(
-                            // create new path with the rootpath + settings.imagesPath
-                            //@ts-ignore
-                            this.app.vault.adapter.getBasePath() + "\\" + settings.imagesPath),
+                        dir: normalizePath(resolvePath(settings.imagesPath)),
                         base:
                             citeKey + "_" + lineElements.imagePath + ".png",
                     })

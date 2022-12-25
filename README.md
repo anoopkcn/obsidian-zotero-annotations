@@ -22,7 +22,7 @@ The plugin provides two commands:
 1. The `Create or Update Note` will create a note in Obsidian with the metadata and annotations from Zotero. If there are no annotations file associated with a reference in Zotero this command will simply import the metadata. 
 2. The `Update All Notes` by default will update all the notes according to the new annotations created in Zotero.  If set to `Create when missing` option in settings it will import and update all the references with annotation available in Zotero. 
 
-**NOTE**:** By default, Hotkeys are not set. 
+**NOTE**: By default, Hotkeys are not set. 
 
 Following is an example of the command `Create or Update Note`:
 ![reference modal](./images/zotero_annotations_reference_modal.png)
@@ -106,7 +106,7 @@ And annotations will look like this but they can be customized:
 ![annotations page](./images/zotero_annotations_annotations.png)
 
 ## Related  or Similar Plugins
-This work is inspired by the plugins mentioned in this section. I used all of them and didn't like some of the features. Or some functions that I wanted were not available. So I decided to borrow some of their code and make my own plugin. Thanks to the authors. Please try these plugins. They are great.
+This work is inspired by the plugins mentioned in this section. I used all of them and didn't like some of the features. Or some functions that I wanted were not available. **So I decided to borrow some of their code** and make my own plugin. Thanks to the authors. Please try these plugins. They are great.
 
 [stefanopagliari/bibnotes](https://github.com/stefanopagliari/bibnotes)
 

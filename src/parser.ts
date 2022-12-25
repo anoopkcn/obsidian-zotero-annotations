@@ -1,4 +1,4 @@
-import { AnnotationElements, PluginSettings, Reference } from "./types";
+import { AnnotationElements, ZoteroAnnotationsPluginSettings, Reference } from "./types";
 import {
     camelToNormalCase,
     createAuthorKey,
@@ -18,7 +18,7 @@ import { formatNoteElements } from "./format";
 export function getAnnotationType(
     annotationCommentFirstWord: string,
     annotationCommentAll: string,
-    settings: PluginSettings
+    settings: ZoteroAnnotationsPluginSettings
 ) {
     const {
         formatMergeAbove,
@@ -111,7 +111,7 @@ export function getExtractionType(note: string) {
     return extractionType;
 }
 
-export function collectAnnotations(note: string, settings: PluginSettings) {
+export function collectAnnotations(note: string, settings: ZoteroAnnotationsPluginSettings) {
     // Remove special characters that would break the replacement of the text in the template
     //lineElements.rowEdited = lineElements.rowEdited.replaceAll("$>", '$$');
     note = note.replaceAll("$&", "$ &");
@@ -136,7 +136,7 @@ export function collectAnnotations(note: string, settings: PluginSettings) {
     }
 }
 
-export function extractAnnotation(selectedEntry: Reference, noteTitleFull: string, settings: PluginSettings) {
+export function extractAnnotation(selectedEntry: Reference, noteTitleFull: string, settings: ZoteroAnnotationsPluginSettings) {
     let extractedAnnotations = "";
     let extractedImages = "";
     let extractedUserNote = "";
@@ -208,7 +208,7 @@ export function extractAnnotation(selectedEntry: Reference, noteTitleFull: strin
 
 
 
-export function parseMetadata(selectedEntry: Reference, settings: PluginSettings, templateOriginal: string) {
+export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotationsPluginSettings, templateOriginal: string) {
     // Create Note from Template
     const template = templateOriginal;
     //Create Note
@@ -295,7 +295,7 @@ export function parseMetadata(selectedEntry: Reference, settings: PluginSettings
 }
 
 // FUNCTION TO PARSE ANNOTATION
-export function parseAnnotationLinesintoElementsZotfile(note: string, settings: PluginSettings) {
+export function parseAnnotationLinesintoElementsZotfile(note: string, settings: ZoteroAnnotationsPluginSettings) {
     //Split the note into lines
     const lines = note.split(/<p>/gm);
     const noteElements: AnnotationElements[] = [];
@@ -505,7 +505,7 @@ export function parseAnnotationLinesintoElementsUserNote(note: string) {
     return noteElements;
 }
 
-export function parseAnnotationLinesintoElementsZotero(note: string, settings: PluginSettings) {
+export function parseAnnotationLinesintoElementsZotero(note: string, settings: ZoteroAnnotationsPluginSettings) {
     // clean the entire annotation
     note = note.replace(/`/g, "'").replace(/, p. p. /g, ", p. ").trim();
     // Split the annotations into an array where each row is an entry

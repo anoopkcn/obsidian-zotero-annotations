@@ -52,26 +52,11 @@ export function createFormatting(settings: PluginSettings) {
             isHighlightQuote ? "”" : "",
         ];
 
-    const highlightFormatBefore =
-        highlightHighlighted +
-        highlightBold +
-        highlightItalic +
-        highlightQuoteOpen;
-
-    const highlightFormatAfter =
-        highlightQuoteClose +
-        highlightItalic +
-        highlightBold +
-        highlightHighlighted +
-        highlightCustomTextAfter;
-
+    const highlightFormatBefore = highlightHighlighted + highlightBold + highlightItalic + highlightQuoteOpen;
+    const highlightFormatAfter = highlightQuoteClose + highlightItalic + highlightBold + highlightHighlighted + highlightCustomTextAfter;
     let highlightPrepend = "";
     if (highlightBullet != "" || highlightBlockquote != "") {
-        highlightPrepend =
-            "\n" +
-            highlightBullet +
-            highlightBlockquote +
-            highlightCustomTextBefore;
+        highlightPrepend = "\n" + highlightBullet + highlightBlockquote + highlightCustomTextBefore;
     }
 
     //Set the formatting variables based on the comments settings
@@ -84,23 +69,13 @@ export function createFormatting(settings: PluginSettings) {
     const commentQuoteClose = isCommentQuote ? "”" : "";
 
     //Create formatting to be added before and after highlights
-    const commentFormatBefore =
-        commentHighlighted + commentBold + commentItalic + commentQuoteOpen;
+    const commentFormatBefore = commentHighlighted + commentBold + commentItalic + commentQuoteOpen;
 
-    const commentFormatAfter =
-        commentQuoteClose +
-        commentItalic +
-        commentBold +
-        commentHighlighted +
-        commentCustomTextAfter;
+    const commentFormatAfter = commentQuoteClose + commentItalic + commentBold + commentHighlighted + commentCustomTextAfter;
 
     let commentPrepend = "";
     if (commentBullet != "" || commentBlockquote != "") {
-        commentPrepend =
-            "\n" +
-            commentBullet +
-            commentBlockquote +
-            commentCustomTextBefore;
+        commentPrepend = "\n" + commentBullet + commentBlockquote + commentCustomTextBefore;
     }
 
     //Set the tag formatting variables based on the tag settings
@@ -124,15 +99,9 @@ export function createFormatting(settings: PluginSettings) {
             isTagQuote ? "”" : "",
         ];
 
-    const tagFormatBefore =
-        tagHash + tagHighlighted + tagBold + tagItalic + tagQuoteOpen;
+    const tagFormatBefore = tagHash + tagHighlighted + tagBold + tagItalic + tagQuoteOpen;
 
-    const tagFormatAfter =
-        tagQuoteClose +
-        tagItalic +
-        tagBold +
-        tagHighlighted +
-        tagCustomTextAfter;
+    const tagFormatAfter = tagQuoteClose + tagItalic + tagBold + tagHighlighted + tagCustomTextAfter;
 
     let tagPrepend = "";
     if (tagBullet != "" || tagBlockquote != "") {
@@ -201,12 +170,10 @@ export function formatNoteElements(
             lineElements.extractionSource === "zotfile"
         ) {
             if (
-                settings.highlightCitationsFormat ===
-                "Only page number" &&
+                settings.highlightCitationsFormat === "Only page number" &&
                 lineElements.pageLabel !== undefined
             ) {
-                lineElements.citeKey =
-                    "" + lineElements.pageLabel
+                lineElements.citeKey = "" + lineElements.pageLabel
             } else if (
                 settings.highlightCitationsFormat === "Pandoc" &&
                 lineElements.pageLabel !== undefined
@@ -227,8 +194,7 @@ export function formatNoteElements(
         }
         //Edit the backlink to Zotero based on the settings
         if (
-            settings.highlightCitationsLink === true &&
-            lineElements.zoteroBackLink.length > 0
+            settings.highlightCitationsLink === true && lineElements.zoteroBackLink.length > 0
         ) {
             if (settings.highlightCitationsFormat !== "Pandoc") {
                 lineElements.citeKey =
@@ -262,8 +228,7 @@ export function formatNoteElements(
         //FORMAT THE HEADINGS IDENTIFIED BY ZOTERO
         //Transforms headings exported by Zotero into H3 (this could be changed later)
         if (lineElements.annotationType === "typeExtractedHeading") {
-            lineElements.rowEdited =
-                "**" + lineElements.rowOriginal.toUpperCase() + "**";
+            lineElements.rowEdited = "**" + lineElements.rowOriginal.toUpperCase() + "**";
         }
 
         // ADD FORMATTING TO THE HIGHLIGHTS
@@ -337,13 +302,8 @@ export function formatNoteElements(
         }
 
         if (settings.isTagHash == true) {
-            for (
-                let index = 0;
-                index < lineElements.inlineTagsArray.length;
-                index++
-            ) {
-                lineElements.inlineTagsArray[index] =
-                    lineElements.inlineTagsArray[index].replace(/ /g, "");
+            for (let index = 0; index < lineElements.inlineTagsArray.length; index++) {
+                lineElements.inlineTagsArray[index] = lineElements.inlineTagsArray[index].replace(/ /g, "");
             }
             //{}
         }
@@ -461,8 +421,7 @@ export function formatNoteElements(
                 if (settings.zoteroStoragePathManual.length > 0) {
                     pathImageOld = path.format({
                         dir:
-                            settings.zoteroStoragePathManual +
-                            lineElements.imagePath,
+                            settings.zoteroStoragePathManual + lineElements.imagePath,
                         base: "image.png",
                     });
                 }
@@ -472,10 +431,7 @@ export function formatNoteElements(
                         dir: normalizePath(
                             // create new path with the rootpath + settings.imagesPath
                             //@ts-ignore
-                            this.app.vault.adapter.getBasePath() +
-                            "\\" +
-                            settings.imagesPath
-                        ),
+                            this.app.vault.adapter.getBasePath() + "\\" + settings.imagesPath),
                         base:
                             citeKey + "_" + lineElements.imagePath + ".png",
                     })
@@ -506,13 +462,7 @@ export function formatNoteElements(
                                 }
                             );
                         }
-                        lineElements.rowEdited =
-                            "![[" +
-                            citeKey +
-                            "_" +
-                            lineElements.imagePath +
-                            ".png]] " +
-                            lineElements.citeKey;
+                        lineElements.rowEdited = `![[${citeKey}_${lineElements.imagePath}.png]] ${lineElements.citeKey}`;
                     }
                 } else {
                     new Notice(
@@ -526,18 +476,12 @@ export function formatNoteElements(
                 if (
                     settings.imagesCommentPosition == "Below the image"
                 ) {
-                    lineElements.rowEdited =
-                        lineElements.rowEdited +
-                        "\n" +
-                        "\n" +
+                    lineElements.rowEdited = lineElements.rowEdited + "\n" + "\n" +
                         lineElements.commentFormatted +
                         lineElements.inlineTagsFormatted;
                 } else {
-                    lineElements.rowEdited =
-                        lineElements.commentFormatted +
-                        lineElements.inlineTagsFormatted +
-                        "\n" +
-                        "\n" +
+                    lineElements.rowEdited = lineElements.commentFormatted +
+                        lineElements.inlineTagsFormatted + "\n" + "\n" +
                         lineElements.rowEdited;
                 }
             }
@@ -549,10 +493,7 @@ export function formatNoteElements(
                     .replace(/\[.*\)/, "")
                     .replace(/\s+$/g, "") +
                 " " +
-                lineElements.highlightFormattedNoPrepend.replace(
-                    /^\s+/g,
-                    ""
-                ) +
+            lineElements.highlightFormattedNoPrepend.replace(/^\s+/g, "") +
                 lineElements.commentFormatted +
                 lineElements.inlineTagsFormatted;
 

@@ -7,7 +7,7 @@ Import PDF annotation notes and metadata from Zotero to Obsidian.
 - [Obsidian](https://obsidian.md/)
 
 ## Installation
-The plugin is not available in the community plugin section in zotero. So you have to install it manually.
+The plugin is not available in the community plugin section in Obsidian. So you have to install it manually.
 ### Manual Installation
 1. Download the latest release from [here](https://github.com/anoopkcn/obsidian-zotero-annotations/releases) and unzip it.
 2. Copy the `obsidian-zotero-annotations` folder to your vault's `.obsidian/plugins` folder.

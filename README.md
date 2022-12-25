@@ -28,6 +28,9 @@ Following is an example of the command `Create or Update Note`:
 ![reference modal](./images/zotero_annotations_reference_modal.png)
 If you wish to change the default style, you can make a custom CSS(Obsidian settings-> Appearance -> CSS Snippets)
 
+<details>
+<summary>CSS Snippet for changing the modal view</summary>
+
 ```css
 .zaTitle {
     /* my title style goes here */
@@ -39,6 +42,7 @@ If you wish to change the default style, you can make a custom CSS(Obsidian sett
     /* my citekey style goes here */
 }
 ```
+</details>
 
 ## Settings
 By default, annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 

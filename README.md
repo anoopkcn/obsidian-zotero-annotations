@@ -3,7 +3,7 @@ Import PDF annotation notes and metadata from Zotero to Obsidian.
 
 ## Requirements
 - [Zotero](https://www.zotero.org/) `v6.x` with [Better BibTeX](https://retorque.re/zotero-better-bibtex/) plugin installed.
-    - Export BetterBibTeX JSON file from Zotero to Obsidian vault(In BetterBibTeX settings select `On Change` option in Automatic Export tab)
+    - Export BetterBibTeX JSON file from Zotero to Obsidian vault(In BetterBibTeX settings select `On Change` option in the Automatic Export tab)
 - [Obsidian](https://obsidian.md/)
 
 ## Installation
@@ -22,11 +22,11 @@ The plugin provides two commands:
 1. The `Create or Update Note` will create a note in Obsidian with the metadata and annotations from Zotero. If there are no annotations file associated with a reference in Zotero this command will simply import the metadata. 
 2. The `Update All Notes` by default will update all the notes according to the new annotations created in Zotero.  If set to `Create when missing` option in settings it will import and update all the references with annotation available in Zotero. 
 
-**NOTE:** By default Hotkeys are not set. 
+**NOTE**:** By default, Hotkeys are not set. 
 
 Following is an example of the command `Create or Update Note`:
 ![reference modal](./images/zotero_annotations_reference_modal.png)
-If you wish to change the default style, you can make a custom css(Obsidian settings-> Appearence -> CSS Snippets)
+If you wish to change the default style, you can make a custom CSS(Obsidian settings-> Appearance -> CSS Snippets)
 
 ```css
 .zaTitle {
@@ -41,7 +41,7 @@ If you wish to change the default style, you can make a custom css(Obsidian sett
 ```
 
 ## Settings
-By default annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 
+By default, annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 
 
 Following is an example of a custom template:
 ```md
@@ -90,7 +90,7 @@ tags: reference
 {{PDFNotes}}
 ```
 
-Above template will produce the following note:
+The above template will produce the following note:
 
 ![reference page](./images/zotero_annotations_metadata.png)
 

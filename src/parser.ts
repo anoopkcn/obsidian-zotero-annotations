@@ -1,5 +1,18 @@
 import { AnnotationElements, PluginSettings, Reference } from "./types";
-import { camelToNormalCase, createAuthorKey, createAuthorKeyFullName, createAuthorKeyInitials, createCreatorAllList, createCreatorList, createLocalFileLink, removeQuoteFromEnd, removeQuoteFromStart, replaceAllTemplates, replaceTemplate, zoteroAppInfo } from "./utils";
+import {
+    camelToNormalCase,
+    createAuthorKey,
+    createAuthorKeyFullName,
+    createAuthorKeyInitials,
+    createCreatorAllList,
+    createCreatorList,
+    createLocalFileLink,
+    removeQuoteFromEnd,
+    removeQuoteFromStart,
+    replaceAllTemplates,
+    replaceTemplate,
+    zoteroAppInfo
+} from "./utils";
 import { formatNoteElements } from "./format";
 
 export function getAnnotationType(

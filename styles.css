@@ -1,52 +1,34 @@
-.zaModalResults .suggestion-item {
-    height: fit-content;
-    line-height: 1.5rem;
-}
-
+/* Title of the reference */
 .zaTitle {
     display: block;
 }
-
 .zaTitle::before {
-    content: '📖 ';
+    content: "📖 ";
     font-weight: bold;
 }
-
-.zaAuthors {
-    color: #555;
-    font-size: 13px;
+.zaTitle::after {
+    content: " ";
 }
 
+/* Authors of the reference */
+.zaAuthors {
+    color: #888;
+    font-size: 13px;
+}
+.zaAuthors::before {
+    content: '👤 ';
+}
 .zaAuthorsEmpty::after {
     font-style: italic;
-    content: 'Unknown authors';
+    content: "Unknown Authors";
 }
 
+/* Citekey style */
 .zaCitekey {
-    color: #9079E9;
-    font-size: 13px;
-    font-family: monospace;
-    display: inline-block;
-    margin-right: 5px;
-    padding-right: 5px;
-    border-right: 1px solid #ccc;
-}
-
-.theme-dark .zaTitle {
     display: block;
-}
-
-.theme-dark .zaAuthors {
-    color: #aaa;
-    font-size: 13px;
-}
-
-.theme-dark .zaCitekey {
-    color: #9079E9;
+    color: #9079e9;
     font-size: 13px;
     font-family: monospace;
-    display: inline-block;
     margin-right: 5px;
     padding-right: 5px;
-    border-right: 1px solid #aaa;
 }

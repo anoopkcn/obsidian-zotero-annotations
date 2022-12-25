@@ -143,14 +143,15 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
         const titleEl = container.createEl('span', {
             cls: 'zaTitle',
         });
-        container.createEl('span', { cls: 'zaCitekey', text: entry.citationKey });
-
         const authorsCls = entry.authorKey
             ? 'zaAuthors'
             : 'zaAuthors zaAuthorsEmpty';
         const authorsEl = container.createEl('span', {
             cls: authorsCls,
         });
+        container.createEl('span', { cls: 'zaCitekey', text: entry.citationKey });
+
+
 
         const allMatches = match.match.matches;
 

@@ -18,7 +18,7 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "General Settings" });
         new Setting(containerEl)
-            .setName("BetterBibTeX JSON File*")
+            .setName("JSON File")
             .setDesc(
                 "Add relative path from the vault folder to the BetterBibTeX JSON file."
             )
@@ -68,7 +68,7 @@ export class SettingsTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName("Template File")
             .setDesc(
-                "Add relative path from the vault folder to the template file. If no template is specified, the default template will be used. Without .md extension."
+                "Add relative path from the vault folder to the template file without .md extension. If no template is specified, the default template will be used."
             )
             .addText((text) =>
                 text
@@ -246,7 +246,7 @@ export class SettingsTab extends PluginSettingTab {
 
         if (settings.saveManualEdits == "Select Section") {
             new Setting(containerEl)
-                .setName("Start - Save Manual Edits")
+                .setName("Overwrite Safe Zone Start")
                 .setDesc(
                     "Define string (e.g. '## Notes') in the template starting from where updating the note will not overwrite the existing text. If field is left empty, the value will be set to the beginning of the note"
                 )
@@ -261,7 +261,7 @@ export class SettingsTab extends PluginSettingTab {
 
             if (settings.saveManualEdits) {
                 new Setting(containerEl)
-                    .setName("End - Save Manual Edits")
+                    .setName("Overwrite Safe Zone End")
                     .setDesc(
                         "Define string (e.g. '## Notes') in the template until where updating the note will not overwrite the existing text. If field is left empty, the value will be set to the end of the note"
                     )

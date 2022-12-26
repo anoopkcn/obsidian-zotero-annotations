@@ -21,7 +21,7 @@ import {
     truncate,
 } from "./utils";
 import { createNote, openNoteAfterImport } from "./notes";
-import { getCreatorFullNames } from "./format_creators";
+import { getCreatorFullNames } from "./creators";
 
 
 export class fuzzySelectReference extends FuzzySuggestModal<Reference> {

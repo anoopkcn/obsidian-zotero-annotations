@@ -8,14 +8,14 @@ import {
     replaceTemplate,
     getZoteroAppInfo
 } from "./utils";
-import { formatAnnotationElements } from "./format_annotations";
+import { formatAnnotationElements } from "./annotations";
 import {
     getCreatorFullInitials,
     getCreatorFullNames,
     getCreatorKey,
     insertCreatorAllList,
     insertCreatorList
-} from "./format_creators";
+} from "./creators";
 
 export function getAnnotationType(
     annotationCommentFirstWord: string,

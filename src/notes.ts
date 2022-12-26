@@ -10,7 +10,7 @@ import {
     resolvePath
 } from "./utils";
 import { extractAnnotation, parseMetadata } from "./parser";
-import { getCreatorFullInitials, getCreatorFullNames, getCreatorKey } from "./format_creators";
+import { getCreatorFullInitials, getCreatorFullNames, getCreatorKey } from "./creators";
 
 export function openNoteAfterImport(file: TFile, isOpen: boolean) {
     if (isOpen) this.app.workspace.getLeaf(false).openFile(file);

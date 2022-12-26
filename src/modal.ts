@@ -15,9 +15,9 @@ import {
 import { Reference, AnnotationElements } from "./types";
 
 import {
-    createAuthorKeyFullName,
+    getCreatorFullNames,
     createNote,
-    createNoteTitle,
+    getNoteTitle,
     openNoteAfterImport,
     orderByDateModified,
     resolvePath,
@@ -85,7 +85,7 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
             }
 
             //Extract the author
-            bibtexArrayItem.authorKey = createAuthorKeyFullName(selectedEntry.creators);
+            bibtexArrayItem.authorKey = getCreatorFullNames(selectedEntry.creators);
 
             //Extract the date the entry was modified
             bibtexArrayItem.dateModified = selectedEntry.dateModified;
@@ -197,7 +197,7 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
             //Create and export Note for select reference
             createNote(selectedEntry, this.plugin.settings)
             //open note  after import
-            const noteTitle = createNoteTitle(selectedEntry, this.plugin.settings.importFileName);
+            const noteTitle = getNoteTitle(selectedEntry, this.plugin.settings.importFileName);
             const myFile = this.app.metadataCache.getFirstLinkpathDest(normalizePath(noteTitle), "")
             openNoteAfterImport(myFile, this.plugin.settings.openAfterImport)
         }

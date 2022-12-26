@@ -1,17 +1,17 @@
 import { AnnotationElements, ZoteroAnnotationsPluginSettings, Reference } from "./types";
 import {
     camelToNormalCase,
-    createAuthorKey,
-    createAuthorKeyFullName,
-    createAuthorKeyInitials,
+    getCreatorKey,
+    getCreatorFullNames,
+    getCreatorFullInitials,
     createCreatorAllList,
     createCreatorList,
-    createLocalFileLink,
+    getLocalFileLink,
     removeQuoteFromEnd,
     removeQuoteFromStart,
     replaceAllTemplates,
     replaceTemplate,
-    zoteroAppInfo
+    getZoteroAppInfo
 } from "./utils";
 import { formatNoteElements } from "./format";
 
@@ -146,7 +146,7 @@ export function extractAnnotation(selectedEntry: Reference, noteTitleFull: strin
     let userNoteElements: AnnotationElements[] = [];
     let indexNote = 0;
 
-    const zoteroInfo = zoteroAppInfo(selectedEntry, settings)
+    const zoteroInfo = getZoteroAppInfo(selectedEntry, settings)
 
     //run the function to parse the annotation for each note (there could be more than one)
 
@@ -253,15 +253,15 @@ export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotati
     selectedEntry.itemType = camelToNormalCase(selectedEntry.itemType);
 
     // Create in-line citation (e.g. Collier, Laporte and Seawright (2009))
-    selectedEntry.citationInLine = `${createAuthorKey(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLine = `${getCreatorKey(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLine = selectedEntry.citationInLine.replace("()", "");
 
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
-    selectedEntry.citationInLineInitials = `${createAuthorKeyInitials(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLineInitials = `${getCreatorFullInitials(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLineInitials = selectedEntry.citationInLineInitials.replace("()", "");
 
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
-    selectedEntry.citationInLineFullName = `${createAuthorKeyFullName(selectedEntry.creators)} (${selectedEntry.year})`;
+    selectedEntry.citationInLineFullName = `${getCreatorFullNames(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLineFullName = selectedEntry.citationInLineFullName.replace("()", "");
 
     // Replace short and full citation
@@ -277,7 +277,7 @@ export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotati
 
     //create field file
     //if (selectedEntry.hasOwnProperty("attachment.")){
-    selectedEntry.file = createLocalFileLink(selectedEntry);
+    selectedEntry.file = getLocalFileLink(selectedEntry);
     // Create an array with all the fields
     const entriesArray = Object.keys(selectedEntry);
 

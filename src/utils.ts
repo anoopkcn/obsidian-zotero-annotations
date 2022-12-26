@@ -12,7 +12,7 @@ import {
 import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
 import { extractAnnotation, parseMetadata } from "./parser";
 
-export function resolvePath(rawPath: string): string {
+export const resolvePath = function (rawPath: string): string {
     const vaultRoot = this.app.vault.adapter instanceof FileSystemAdapter
         ? this.app.vault.adapter.getBasePath() : '/';
     return path.normalize(path.resolve(vaultRoot, rawPath))
@@ -27,6 +27,13 @@ export function camelToNormalCase(str: string) {
     );
 }
 
+export const getInitials = (string: string) => {
+    let names = string.split(" "), initials = names[0].substring(0, 1).toUpperCase() + ".";
+    if (names.length > 1) {
+        initials += names[names.length - 1].substring(0, 1).toUpperCase() + ".";
+    }
+    return initials;
+};
 // Cleanup title of the document (remove URL, remove special characters)
 export function truncate(str: string, n: number) {
     var str = str.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').replace(/[^\x00-\x7F]/g, "");
@@ -103,7 +110,7 @@ export function orderByDateModified(a: Reference, b: Reference) {
 }
 
 
-export const createAuthorKey = (creators: CreatorArray) => {
+export const getCreatorKey = (creators: CreatorArray) => {
     const authorKey: string[] = [];
     const editorKey: string[] = [];
     let authorKeyFixed = "";
@@ -142,7 +149,7 @@ export const createAuthorKey = (creators: CreatorArray) => {
     if (editorKey.length > 0) return editorKeyFixed
 };
 
-export const createAuthorKeyFullName = (creators: CreatorArray) => {
+export const getCreatorFullNames = (creators: CreatorArray) => {
     const authorKey: string[] = [];
     const authorKeyReverse: string[] = [];
     const editorKey: string[] = [];
@@ -196,7 +203,7 @@ export const createAuthorKeyFullName = (creators: CreatorArray) => {
     if (editorKey.length > 0) { return editorKeyFixed; }
 };
 
-export const createAuthorKeyInitials = (creators: CreatorArray) => {
+export const getCreatorFullInitials = (creators: CreatorArray) => {
     const authorKey: string[] = [];
     const editorKey: string[] = [];
     let authorKeyFixed = "";
@@ -235,41 +242,31 @@ export const createAuthorKeyInitials = (creators: CreatorArray) => {
     if (editorKey.length > 0) return editorKeyFixed
 };
 
-export function arrangeCreatorName(
+export const arrangeCreatorName = (
     creator: Creator,
-    nameCustom: string
-) {
+    customName: string
+) => {
     const isFirstName = creator.hasOwnProperty("firstName")
     const isLastName = creator.hasOwnProperty("lastName")
 
     if (creator.hasOwnProperty("name")) {
-        nameCustom = creator.name;
-        nameCustom = nameCustom.trim();
-        return nameCustom;
+        return creator.name.trim();
     } else if (isLastName && isFirstName) {
-        nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
-        nameCustom = nameCustom.replace("{{firstName}}", creator.firstName);
-        const getInitials = function (string: string) {
-            let names = string.split(" "), initials = names[0].substring(0, 1).toUpperCase() + ".";
-            if (names.length > 1) {
-                initials += names[names.length - 1].substring(0, 1).toUpperCase() + ".";
-            }
-            return initials;
-        };
-        nameCustom = nameCustom.replace("{{firstNameInitials}}", getInitials(creator.firstName));
-        nameCustom = nameCustom.trim();
-        return nameCustom;
+        return customName
+            .replace("{{lastName}}", creator.lastName)
+            .replace("{{firstName}}", creator.firstName)
+            .replace("{{firstNameInitials}}", getInitials(creator.firstName))
+            .trim()
     } else if (isLastName && !isFirstName) {
-        nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
-        nameCustom = nameCustom.replace("{{firstName}}", "");
-        nameCustom = nameCustom.trim();
-        return nameCustom;
-    } else if (!isLastName && isFirstName
-    ) {
-        nameCustom = nameCustom.replace("{{lastName}}", "");
-        nameCustom = nameCustom.replace("{{firstName}}", creator.firstName);
-        nameCustom = nameCustom.trim();
-        return nameCustom;
+        return customName
+            .replace("{{lastName}}", creator.lastName)
+            .replace("{{firstName}}", "")
+            .trim()
+    } else if (!isLastName && isFirstName) {
+        return customName
+            .replace("{{lastName}}", "")
+            .replace("{{firstName}}", creator.firstName)
+            .trim()
     }
 }
 
@@ -316,7 +313,7 @@ export const createCreatorAllList = (
     const creatorListBracket = creatorList.map(makeWiki);
     const creatorListQuotes = creatorList.map(makeQuotes);
     //add a space after the divided if it is not present
-    if (divider.slice(-1) !== " ") { divider = divider + " "; }
+    if (divider.slice(-1) !== " ") divider = divider + " "
 
     if (creatorList.length == 0) {
         return note;
@@ -324,13 +321,11 @@ export const createCreatorAllList = (
         note = replaceTemplate(note, `[[{{creator}}]]`, creatorListBracket.join(divider));
         note = replaceTemplate(note, `"{{creator}}"`, creatorListQuotes.join(divider));
         note = replaceTemplate(note, `{{creator}}`, creatorList.join(divider));
-        note = replaceTemplate(note, `{{Creator}}`, creatorList.join(divider));
-
         return note;
     }
 };
 
-export function createTagList(
+export function insertTagList(
     tagList: string[],
     note: string
 ) {
@@ -374,7 +369,7 @@ export function replaceMissingFields(
     return copy;
 }
 
-export function createLocalFileLink(reference: Reference) {
+export function getLocalFileLink(reference: Reference) {
     //if there is no attachment, return placeholder
     if (reference.attachments.length == 0) return "{{localFile}}";
     const filesList: string[] = [];
@@ -403,7 +398,7 @@ export function createLocalFileLink(reference: Reference) {
     return filesListString;
 }
 
-export function createNoteTitle(
+export function getNoteTitle(
     selectedEntry: Reference, 
     exportTitle: string
 ) {
@@ -432,7 +427,7 @@ export function createNotePath(
     return resolvePath(`${exportPath}/${noteTitle}.md`)
 }
 
-export function replaceTagList(
+export function insertKeywordList(
     selectedEntry: Reference,
     arrayExtractedKeywords: string[],
     metadata: string,
@@ -503,7 +498,7 @@ export function replaceTagList(
     return metadata;
 }
 
-export function zoteroAppInfo(
+export function getZoteroAppInfo(
     selectedEntry: Reference,
     settings: ZoteroAnnotationsPluginSettings
 ) {
@@ -713,19 +708,19 @@ export async function createNote(
     settings: ZoteroAnnotationsPluginSettings
 ): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
-    const authorKey = createAuthorKey(selectedEntry.creators);
+    const authorKey = getCreatorKey(selectedEntry.creators);
     // set the authorkey field (with or without first name) on the 
     // entry to use when creating the title and to replace in the template
     selectedEntry.authorKey = authorKey;
-    selectedEntry.authorKeyInitials = createAuthorKeyInitials(selectedEntry.creators);
-    selectedEntry.authorKeyFullName = createAuthorKeyFullName(selectedEntry.creators);
+    selectedEntry.authorKeyInitials = getCreatorFullInitials(selectedEntry.creators);
+    selectedEntry.authorKeyFullName = getCreatorFullNames(selectedEntry.creators);
 
     // Load Template
     const templateNote = await importTemplate(settings);
     // Create the metadata
     let litnote: string = parseMetadata(selectedEntry, settings, templateNote);
     // Define the name and full path of the file to be exported
-    const noteTitle = createNoteTitle(selectedEntry, settings.importFileName,);
+    const noteTitle = getNoteTitle(selectedEntry, settings.importFileName,);
     const notePath = createNotePath(noteTitle, settings.importPath)
     // Extract the annotation and the keyword from the text
     const resultAnnotations = extractAnnotation(selectedEntry, notePath, settings);
@@ -737,7 +732,7 @@ export async function createNote(
     if (extractedKeywords == undefined) { extractedKeywords = []; }
 
     // Join the tags in the metadata with the tags extracted in the text and replace them in the text
-    litnote = replaceTagList(selectedEntry, extractedKeywords, litnote, settings.multipleFieldsDivider);
+    litnote = insertKeywordList(selectedEntry, extractedKeywords, litnote, settings.multipleFieldsDivider);
     // delete the missing fields in the metadata
     const missingFieldSetting = settings.missingfield;
     litnote = replaceMissingFields(litnote, missingFieldSetting, settings.missingfieldreplacement);
@@ -796,7 +791,7 @@ export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
         // skip if it was modified before the last update
         if (datemodified < lastUpdate) continue;
         // skip if the setting is to update only existing note and the note is not found at the give folder
-        const noteTitle = createNoteTitle(selectedEntry, settings.importFileName)
+        const noteTitle = getNoteTitle(selectedEntry, settings.importFileName)
         const notePath = createNotePath(noteTitle, settings.importPath)
         if (settings.updateNotes === "Only existing notes" && !fs.existsSync(notePath)) continue;
         // Create and export Note for select reference

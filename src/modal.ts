@@ -27,9 +27,7 @@ import {
 
 export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
     plugin: ZoteroAnnotations;
-    template: string;
     selectArray: Reference[];
-    allCitationKeys: string[];
     data: {
         collections: Record<string, never>;
         config: Record<string, never>;
@@ -37,8 +35,6 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
         version: string;
         __proto__: Record<string, never>;
     };
-    keyWordArray: string[];
-    noteElements: AnnotationElements[];
 
     constructor(app: App, plugin: ZoteroAnnotations) {
         super(app);
@@ -104,9 +100,6 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
         }
         // Order the suggestions from the one modified most recently
         bibtexArray.sort(orderByDateModified);
-
-        //Export all citationKeys
-        this.allCitationKeys = bibtexArray.map((a) => a.citationKey);
 
         this.selectArray = bibtexArray;
         await this.updateSuggestions();
@@ -187,28 +180,22 @@ export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
         evt: MouseEvent | KeyboardEvent
     ) {
         //Create an array where you store the citekey to be processed
-        let citeKeyToBeProcessed: string[] = [];
-        citeKeyToBeProcessed.push(referenceSelected.citationKey);
+        let citeKeyItem: string[] = [];
+        citeKeyItem.push(referenceSelected.citationKey);
 
         // Loop to process the selected note
-        for (
-            let indexNoteToBeProcessed = 0;
-            indexNoteToBeProcessed < citeKeyToBeProcessed.length;
-            indexNoteToBeProcessed++
-        ) {
+        for (let index = 0; index < citeKeyItem.length; index++) {
             //Find the index of the reference selected
-            const indexSelectedReference = this.data.items.findIndex(
+            const referenceItem = this.data.items.findIndex(
                 (item: { citationKey: string }) =>
                     item.citationKey ===
-                    citeKeyToBeProcessed[indexNoteToBeProcessed]
+                    citeKeyItem[index]
             );
 
             //Selected Reference
-            const selectedEntry: Reference = this.data.items[indexSelectedReference];
-
+            const selectedEntry: Reference = this.data.items[referenceItem];
             //Create and export Note for select reference
             createNote(selectedEntry, this.plugin.settings)
-
             //open note  after import
             const noteTitle = createNoteTitle(selectedEntry, this.plugin.settings.importFileName);
             const myFile = this.app.metadataCache.getFirstLinkpathDest(normalizePath(noteTitle), "")

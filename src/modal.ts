@@ -16,13 +16,12 @@ import { Reference, AnnotationElements } from "./types";
 
 import {
     getCreatorFullNames,
-    createNote,
     getNoteTitle,
-    openNoteAfterImport,
     orderByDateModified,
     resolvePath,
     truncate,
 } from "./utils";
+import { createNote, openNoteAfterImport } from "./notes";
 
 
 export class fuzzySelectReference extends FuzzySuggestModal<Reference> {

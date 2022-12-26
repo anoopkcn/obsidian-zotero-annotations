@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS } from "./constants";
 import { fuzzySelectReference } from "./modal";
 import { SettingsTab } from "./settings";
 import { ZoteroAnnotationsPluginSettings } from "./types";
-import { updateNotes as updateNotes } from "./utils";
+import { updateNotes } from "./notes";
 
 // This is the main plugin class
 // It is responsible for loading the plugin settings, adding the settings tab, and adding the commands

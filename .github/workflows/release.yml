@@ -16,8 +16,7 @@ jobs:
                   node-version: "18.x"
             - name: Get Version
               id: version
-              run: |
-                  echo "::set-output name=tag::$(git describe --abbrev=0)"
+              run: echo "tag=$(git describe --abbrev=0)" >> $GITHUB_OUTPUT
             # Build the plugin
             - name: Build
               id: build

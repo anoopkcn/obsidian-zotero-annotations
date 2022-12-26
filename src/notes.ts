@@ -1,7 +1,17 @@
 import { Notice, TFile } from "obsidian";
 import * as fs from "fs";
 import { Reference, ZoteroAnnotationsPluginSettings } from "./types";
-import { createNotePath, getCreatorFullInitials, getCreatorFullNames, getCreatorKey, getNoteTitle, importTemplate, insertKeywordList, replaceMissingFields, resolvePath } from "./utils";
+import {
+    createNotePath,
+    getCreatorFullInitials,
+    getCreatorFullNames,
+    getCreatorKey,
+    getNoteTitle,
+    importTemplate,
+    insertKeywordList,
+    replaceMissingFields,
+    resolvePath
+} from "./utils";
 import { extractAnnotation, parseMetadata } from "./parser";
 
 export function openNoteAfterImport(file: TFile, isOpen: boolean) {

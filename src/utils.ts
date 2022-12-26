@@ -1,4 +1,4 @@
-import { FileSystemAdapter, Notice, TFile, normalizePath } from "obsidian";
+import { FileSystemAdapter, TFile, normalizePath } from "obsidian";
 import path from "path";
 import {
     Creator,
@@ -9,7 +9,6 @@ import {
 
 
 import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
-import { extractAnnotation, parseMetadata } from "./parser";
 
 export const resolvePath = function (rawPath: string): string {
     const vaultRoot = this.app.vault.adapter instanceof FileSystemAdapter

@@ -13,18 +13,15 @@ import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
 import { extractAnnotation, parseMetadata } from "./parser";
 
 export function resolvePath(rawPath: string): string {
-    const vaultRoot =
-        this.app.vault.adapter instanceof FileSystemAdapter
-            ? this.app.vault.adapter.getBasePath()
-            : '/';
+    const vaultRoot = this.app.vault.adapter instanceof FileSystemAdapter
+        ? this.app.vault.adapter.getBasePath() : '/';
     return path.normalize(path.resolve(vaultRoot, rawPath))
 }
 
 // convert camelCase to Normal Case
 export function camelToNormalCase(str: string) {
     return (
-        str.replace(/([A-Z])/g, " $1")
-            .replace(/^./, function (str) {
+        str.replace(/([A-Z])/g, " $1").replace(/^./, function (str) {
                 return str.toUpperCase();
             })
     );
@@ -38,11 +35,10 @@ export function truncate(str: string, n: number) {
 
 
 // import template from file if present or set it to the default template
-export async function importTemplate(settings: ZoteroAnnotationsPluginSettings): Promise<string> {
-    const template = this.app.metadataCache.getFirstLinkpathDest(
-        normalizePath(settings.templatePath),
-        ""
-    );
+export async function importTemplate(
+    settings: ZoteroAnnotationsPluginSettings
+): Promise<string> {
+    const template = this.app.metadataCache.getFirstLinkpathDest(normalizePath(settings.templatePath), "");
     if (template && template instanceof TFile) {
         const data = await this.app.vault.read(template);
         return data;
@@ -53,7 +49,7 @@ export async function importTemplate(settings: ZoteroAnnotationsPluginSettings):
 
 export function replaceAllTemplates(
     entriesArray: string[],
-    note: string,
+    note: string, 
     selectedEntry: Reference
 ) {
     let copy = note.slice();
@@ -62,11 +58,7 @@ export function replaceAllTemplates(
         const KW = entriesArray[z];
         const KW_Brackets = "{{" + KW + "}}";
         // 	 replace the keyword in the template
-        copy = replaceTemplate(
-            copy,
-            KW_Brackets,
-            `${selectedEntry[KW as keyof Reference]}`
-        ); // fixed the type
+        copy = replaceTemplate(copy, KW_Brackets, `${selectedEntry[KW as keyof Reference]}`);
     }
     return copy;
 }
@@ -77,7 +69,7 @@ export function escapeRegExp(stringAdd: string) {
 
 export function replaceTemplate(
     stringAdd: string,
-    find: string,
+    find: string, 
     replace: string
 ) {
     return stringAdd.replace(new RegExp(escapeRegExp(find), "g"), replace);
@@ -94,97 +86,36 @@ export const createAuthorKey = (creators: CreatorArray) => {
     let editorKeyFixed = "";
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex];
+        const isFirstName = creator.hasOwnProperty("firstName");
+        const isLastName = creator.hasOwnProperty("lastName");
 
         if (creator.creatorType === "author") {
-            if (creator.hasOwnProperty("name")) {
-                //authorList.push(creator.name)
-                authorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.lastName + ", " + creator.firstName)
-                authorKey.push(creator.lastName);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.lastName)
-                authorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.firstName)
-                authorKey.push(creator.firstName);
-            }
+            if (creator.hasOwnProperty("name")) authorKey.push(creator.name)
+            else if (isLastName && isFirstName) authorKey.push(creator.lastName)
+            else if (isLastName && !isFirstName) authorKey.push(creator.lastName)
+            else if (!isLastName && isFirstName) authorKey.push(creator.firstName)
         } else if (creator.creatorType === "editor") {
-            if (creator.hasOwnProperty("name")) {
-                //editorList.push(creator.name)
-                editorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.lastName + ", " + creator.firstName)
-                editorKey.push(creator.lastName);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.lastName)
-                editorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.firstName)
-                editorKey.push(creator.firstName);
-            }
+            if (creator.hasOwnProperty("name")) editorKey.push(creator.name)
+            else if (isLastName && isFirstName) editorKey.push(creator.lastName)
+            else if (isLastName && !isFirstName) editorKey.push(creator.lastName)
+            else if (!isLastName && isFirstName) editorKey.push(creator.firstName)
+
         }
     }
 
     //Adjust the authorKey depending on the number of authors
-
-    if (authorKey.length == 1) {
-        authorKeyFixed = authorKey[0];
-    }
-    if (authorKey.length == 2) {
-        authorKeyFixed = authorKey[0] + " and " + authorKey[1];
-    }
-
-    if (authorKey.length == 3) {
-        authorKeyFixed =
-            authorKey[0] + ", " + authorKey[1] + " and " + authorKey[2];
-    }
-
-    if (authorKey.length > 3) {
-        authorKeyFixed = authorKey[0] + " et al.";
-    }
-    if (authorKey.length > 0) {
-        return authorKeyFixed;
-    }
-
+    if (authorKey.length == 1) authorKeyFixed = authorKey[0]
+    if (authorKey.length == 2) authorKeyFixed = authorKey[0] + " and " + authorKey[1]
+    if (authorKey.length == 3) authorKeyFixed = authorKey[0] + ", " + authorKey[1] + " and " + authorKey[2]
+    if (authorKey.length > 3) authorKeyFixed = authorKey[0] + " et al."
+    if (authorKey.length > 0) return authorKeyFixed
     //If there are no authors (because it is an edited book), 
     // then returns the name of the editors
-    if (editorKey.length == 1) {
-        editorKeyFixed = editorKey[0];
-    }
-    if (editorKey.length == 2) {
-        editorKeyFixed = editorKey[0] + " and " + editorKey[1];
-    }
-
-    if (editorKey.length == 3) {
-        editorKeyFixed =
-            editorKey[0] + ", " + editorKey[1] + " and " + editorKey[2];
-    }
-
-    if (authorKey.length > 3) {
-        editorKeyFixed = editorKey[0] + " et al.";
-    }
-    if (editorKey.length > 0) {
-        return editorKeyFixed;
-    }
+    if (editorKey.length == 1) editorKeyFixed = editorKey[0]
+    if (editorKey.length == 2) editorKeyFixed = editorKey[0] + " and " + editorKey[1]
+    if (editorKey.length == 3) editorKeyFixed = editorKey[0] + ", " + editorKey[1] + " and " + editorKey[2]
+    if (authorKey.length > 3) editorKeyFixed = editorKey[0] + " et al."
+    if (editorKey.length > 0) return editorKeyFixed
 };
 
 export const createAuthorKeyFullName = (creators: CreatorArray) => {
@@ -197,109 +128,48 @@ export const createAuthorKeyFullName = (creators: CreatorArray) => {
     let editorKeyFixed = "";
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex]; //select the author
+
+        const isFirstName = creator.hasOwnProperty("firstName")
+        const isLastName = creator.hasOwnProperty("lastName")
+
         if (creator.creatorType === "author") {
             if (creator.hasOwnProperty("name")) {
-                //authorList.push(creator.name)
                 authorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
+            } else if (isLastName && isFirstName) {
                 authorKey.push(creator.lastName + ", " + creator.firstName);
-                authorKeyReverse.push(
-                    creator.firstName + " " + creator.lastName
-                );
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.lastName)
+                authorKeyReverse.push(creator.firstName + " " + creator.lastName);
+            } else if (isLastName && !isFirstName) {
                 authorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.firstName)
+            } else if (!isLastName && isFirstName) {
                 authorKey.push(creator.firstName);
             }
         } else if (creator.creatorType === "editor") {
             if (creator.hasOwnProperty("name")) {
-                //editorList.push(creator.name)
                 editorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
+            } else if (isLastName && isFirstName) {
                 editorKey.push(creator.lastName + ", " + creator.firstName);
-                editorKeyReverse.push(
-                    creator.firstName + " " + creator.lastName
-                );
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.lastName)
+                editorKeyReverse.push(creator.firstName + " " + creator.lastName);
+            } else if (isLastName && !isFirstName) {
                 editorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.firstName)
+            } else if (!isLastName && isFirstName) {
                 editorKey.push(creator.firstName);
             }
         }
     }
 
     //Adjust the authorKey depending on the number of authors
-
-    if (authorKey.length == 1) {
-        authorKeyFixed = authorKey[0];
-    }
-    if (authorKey.length == 2) {
-        authorKeyFixed = authorKey[0] + " and " + authorKeyReverse[1];
-    }
-
-    if (authorKey.length == 3) {
-        authorKeyFixed =
-            authorKey[0] +
-            ", " +
-            authorKeyReverse[1] +
-            " and " +
-            authorKeyReverse[2];
-    }
-
-    if (authorKey.length > 3) {
-        authorKeyFixed = authorKey[0] + " et al.";
-    }
-
-    if (authorKey.length > 0) {
-        return authorKeyFixed;
-    }
-
+    if (authorKey.length == 1) { authorKeyFixed = authorKey[0]; }
+    if (authorKey.length == 2) { authorKeyFixed = authorKey[0] + " and " + authorKeyReverse[1]; }
+    if (authorKey.length == 3) { authorKeyFixed = authorKey[0] + ", " + authorKeyReverse[1] + " and " + authorKeyReverse[2]; }
+    if (authorKey.length > 3) { authorKeyFixed = authorKey[0] + " et al."; }
+    if (authorKey.length > 0) { return authorKeyFixed; }
     //If there are no authors (because it is an edited book), 
     // then returns the name of the editors
-    if (editorKey.length == 1) {
-        editorKeyFixed = editorKey[0];
-    }
-    if (editorKey.length == 2) {
-        editorKeyFixed = editorKey[0] + " and " + editorKeyReverse[1];
-    }
-
-    if (editorKey.length == 3) {
-        editorKeyFixed =
-            editorKey[0] +
-            ", " +
-            editorKeyReverse[1] +
-            " and " +
-            editorKeyReverse[2];
-    }
-
-    if (authorKey.length > 3) {
-        editorKeyFixed = editorKey[0] + " et al.";
-    }
-    if (editorKey.length > 0) {
-        return editorKeyFixed;
-    }
+    if (editorKey.length == 1) { editorKeyFixed = editorKey[0]; }
+    if (editorKey.length == 2) { editorKeyFixed = editorKey[0] + " and " + editorKeyReverse[1]; }
+    if (editorKey.length == 3) { editorKeyFixed = editorKey[0] + ", " + editorKeyReverse[1] + " and " + editorKeyReverse[2]; }
+    if (authorKey.length > 3) { editorKeyFixed = editorKey[0] + " et al."; }
+    if (editorKey.length > 0) { return editorKeyFixed; }
 };
 
 export const createAuthorKeyInitials = (creators: CreatorArray) => {
@@ -309,169 +179,91 @@ export const createAuthorKeyInitials = (creators: CreatorArray) => {
     let editorKeyFixed = "";
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex]; //select the author
+        const isFirstName = creator.hasOwnProperty("firstName")
+        const isLastName = creator.hasOwnProperty("lastName")
+
         if (creator.creatorType === "author") {
-            if (creator.hasOwnProperty("name")) {
-                //authorList.push(creator.name)
-                authorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                authorKey.push(
-                    creator.lastName +
-                    ", " +
-                    creator.firstName.substring(0, 1) +
-                    "."
-                );
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.lastName)
-                authorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //authorList.push(creator.firstName)
-                authorKey.push(creator.firstName);
-            }
+            if (creator.hasOwnProperty("name")) authorKey.push(creator.name)
+            else if (isLastName && isFirstName) authorKey.push(creator.lastName + ", " + creator.firstName.substring(0, 1) + ".")
+            else if (isLastName && !isFirstName) authorKey.push(creator.lastName)
+            else if (!isLastName && isFirstName) authorKey.push(creator.firstName)
         } else if (creator.creatorType === "editor") {
-            if (creator.hasOwnProperty("name")) {
-                //editorList.push(creator.name)
-                editorKey.push(creator.name);
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                editorKey.push(
-                    creator.lastName +
-                    ", " +
-                    creator.firstName.substring(0, 1) +
-                    "."
-                );
-            } else if (
-                creator.hasOwnProperty("lastName") &&
-                !creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.lastName)
-                editorKey.push(creator.lastName);
-            } else if (
-                !creator.hasOwnProperty("lastName") &&
-                creator.hasOwnProperty("firstName")
-            ) {
-                //editorList.push(creator.firstName)
-                editorKey.push(creator.firstName);
-            }
+            if (creator.hasOwnProperty("name")) editorKey.push(creator.name)
+            else if (isLastName && isFirstName) editorKey.push(creator.lastName + ", " + creator.firstName.substring(0, 1) + ".")
+            else if (isLastName && !isFirstName) editorKey.push(creator.lastName)
+            else if (!isLastName && isFirstName) editorKey.push(creator.firstName)
         }
     }
 
     //Adjust the authorKey depending on the number of authors
 
-    if (authorKey.length == 1) {
-        authorKeyFixed = authorKey[0];
-    }
-    if (authorKey.length == 2) {
-        authorKeyFixed = authorKey[0] + " and " + authorKey[1];
-    }
-
-    if (authorKey.length == 3) {
-        authorKeyFixed =
-            authorKey[0] + ", " + authorKey[1] + " and " + authorKey[2];
-    }
-
-    if (authorKey.length > 3) {
-        authorKeyFixed = authorKey[0] + " et al.";
-    }
-    if (authorKey.length > 0) {
-        return authorKeyFixed;
-    }
-
+    if (authorKey.length == 1) authorKeyFixed = authorKey[0]
+    if (authorKey.length == 2) authorKeyFixed = authorKey[0] + " and " + authorKey[1]
+    if (authorKey.length == 3) authorKeyFixed = authorKey[0] + ", " + authorKey[1] + " and " + authorKey[2]
+    if (authorKey.length > 3) authorKeyFixed = authorKey[0] + " et al."
+    if (authorKey.length > 0) return authorKeyFixed
     //If there are no authors (because it is an edited book), 
     // then returns the name of the editors
-    if (editorKey.length == 1) {
-        editorKeyFixed = editorKey[0];
-    }
-    if (editorKey.length == 2) {
-        editorKeyFixed = editorKey[0] + " and " + editorKey[1];
-    }
-
-    if (editorKey.length == 3) {
-        editorKeyFixed =
-            editorKey[0] + ", " + editorKey[1] + " and " + editorKey[2];
-    }
-
-    if (authorKey.length > 3) {
-        editorKeyFixed = editorKey[0] + " et al.";
-    }
-    if (editorKey.length > 0) {
-        return editorKeyFixed;
-    }
+    if (editorKey.length == 1) editorKeyFixed = editorKey[0]
+    if (editorKey.length == 2) editorKeyFixed = editorKey[0] + " and " + editorKey[1]
+    if (editorKey.length == 3) editorKeyFixed = editorKey[0] + ", " + editorKey[1] + " and " + editorKey[2]
+    if (authorKey.length > 3) editorKeyFixed = editorKey[0] + " et al."
+    if (editorKey.length > 0) return editorKeyFixed
 };
 
-export function removeQuoteFromStart(quote: string, annotation: string) {
+export function removeQuoteFromStart(
+    quote: string,
+    annotation: string
+) {
     let copy = annotation.slice();
     while (copy.charAt(0) === quote) copy = copy.substring(1);
     return copy;
 }
-export function removeQuoteFromEnd(quote: string, annotation: string) {
+export function removeQuoteFromEnd(
+    quote: string,
+    annotation: string
+) {
     let copy = annotation.slice();
-    while (copy[copy.length - 1] === quote)
-        copy = copy.substring(0, copy.length - 1);
+    while (copy[copy.length - 1] === quote) copy = copy.substring(0, copy.length - 1);
     return copy;
 }
 
 export function orderByDateModified(a: Reference, b: Reference) {
-    if (a.dateModified > b.dateModified) {
-        return -1;
-    }
-    if (a.dateModified < b.dateModified) {
-        return 1;
-    }
+    if (a.dateModified > b.dateModified) return -1
+    if (a.dateModified < b.dateModified) return 1
     return 0;
 }
 
-export function formatCreatorsName(creator: Creator, nameCustom: string) {
+export function formatCreatorsName(
+    creator: Creator,
+    nameCustom: string
+) {
     // when the creator only has a name (no first or last name) this works just fine
     if (creator.hasOwnProperty("name")) {
         nameCustom = creator.name;
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (
-        creator.hasOwnProperty("lastName") &&
-        creator.hasOwnProperty("firstName")
-    ) {
+    } else if (creator.hasOwnProperty("lastName") && creator.hasOwnProperty("firstName")) {
         nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
         nameCustom = nameCustom.replace("{{firstName}}", creator.firstName);
         const getInitials = function (string: string) {
-            let names = string.split(" "),
-                initials = names[0].substring(0, 1).toUpperCase() + ".";
+            let names = string.split(" "), initials = names[0].substring(0, 1).toUpperCase() + ".";
             if (names.length > 1) {
-                initials +=
-                    names[names.length - 1].substring(0, 1).toUpperCase() + ".";
+                initials += names[names.length - 1].substring(0, 1).toUpperCase() + ".";
             }
             return initials;
         };
-
-        nameCustom = nameCustom.replace(
-            "{{firstNameInitials}}",
-            getInitials(creator.firstName)
-        );
+        nameCustom = nameCustom.replace("{{firstNameInitials}}", getInitials(creator.firstName));
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (
-        creator.hasOwnProperty("lastName") &&
-        !creator.hasOwnProperty("firstName")
-    ) {
+    } else if (creator.hasOwnProperty("lastName") && !creator.hasOwnProperty("firstName")) {
         nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
         nameCustom = nameCustom.replace("; {{firstName}}", creator.firstName);
         nameCustom = nameCustom.replace(", {{firstName}}", creator.firstName);
         nameCustom = nameCustom.replace("{{firstName}}", "");
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (
-        !creator.hasOwnProperty("lastName") &&
-        creator.hasOwnProperty("firstName")
+    } else if (!creator.hasOwnProperty("lastName") && creator.hasOwnProperty("firstName")
     ) {
         nameCustom = nameCustom.replace("; {{lastName}}", creator.firstName);
         nameCustom = nameCustom.replace(", {{lastName}}", creator.firstName);
@@ -493,39 +285,20 @@ export const createCreatorList = (
     const creatorList: string[] = [];
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex]; //select the author
-        if (creator.creatorType === typeCreator) {
-            creatorList.push(formatCreatorsName(creator, nameFormat));
-        }
+        if (creator.creatorType === typeCreator) { creatorList.push(formatCreatorsName(creator, nameFormat)); }
     }
 
     const creatorListBracket = creatorList.map(makeWiki);
-
     const creatorListQuotes = creatorList.map(makeQuotes);
-
     //add a space after the divided if it is not present
-    if (divider.slice(-1) !== " ") {
-        divider = divider + " ";
-    }
+    if (divider.slice(-1) !== " ") divider = divider + " "
 
     if (creatorList.length == 0) {
         return note;
     } else {
-        note = replaceTemplate(
-            note,
-            `[[{{${typeCreator}}}]]`,
-            creatorListBracket.join(divider)
-        );
-        note = replaceTemplate(
-            note,
-            `"{{${typeCreator}}}"`,
-            creatorListQuotes.join(divider)
-        );
-        note = replaceTemplate(
-            note,
-            `{{${typeCreator}}}`,
-            creatorList.join(divider)
-        );
-
+        note = replaceTemplate(note, `[[{{${typeCreator}}}]]`, creatorListBracket.join(divider));
+        note = replaceTemplate(note, `"{{${typeCreator}}}"`, creatorListQuotes.join(divider));
+        note = replaceTemplate(note, `{{${typeCreator}}}`, creatorList.join(divider));
         return note;
     }
 };
@@ -541,28 +314,16 @@ export const createCreatorAllList = (
         const creator: Creator = creators[creatorindex]; //select the author
         creatorList.push(formatCreatorsName(creator, nameFormat));
     }
-
     const creatorListBracket = creatorList.map(makeWiki);
     const creatorListQuotes = creatorList.map(makeQuotes);
-
     //add a space after the divided if it is not present
-    if (divider.slice(-1) !== " ") {
-        divider = divider + " ";
-    }
+    if (divider.slice(-1) !== " ") { divider = divider + " "; }
 
     if (creatorList.length == 0) {
         return note;
     } else {
-        note = replaceTemplate(
-            note,
-            `[[{{creator}}]]`,
-            creatorListBracket.join(divider)
-        );
-        note = replaceTemplate(
-            note,
-            `"{{creator}}"`,
-            creatorListQuotes.join(divider)
-        );
+        note = replaceTemplate(note, `[[{{creator}}]]`, creatorListBracket.join(divider));
+        note = replaceTemplate(note, `"{{creator}}"`, creatorListQuotes.join(divider));
         note = replaceTemplate(note, `{{creator}}`, creatorList.join(divider));
         note = replaceTemplate(note, `{{Creator}}`, creatorList.join(divider));
 
@@ -570,21 +331,16 @@ export const createCreatorAllList = (
     }
 };
 
-export function createTagList(tagList: string[], note: string) {
+export function createTagList(
+    tagList: string[],
+    note: string
+) {
     if (tagList.length == 0) {
         return note;
     } else {
         const tagListBraket = tagList.map(makeWiki);
-        note = replaceTemplate(
-            note,
-            `[[{{keywords}}]]`,
-            String(tagListBraket.join("; "))
-        );
-        note = replaceTemplate(
-            note,
-            `{{keywords}}`,
-            String(tagList.join("; "))
-        );
+        note = replaceTemplate(note, `[[{{keywords}}]]`, String(tagListBraket.join("; ")));
+        note = replaceTemplate(note, `{{keywords}}`, String(tagList.join("; ")));
         return note;
     }
 }
@@ -599,8 +355,7 @@ export function replaceMissingFields(
     if (missingfield === "Replace with custom text") {
         copy = copy
             .replace(TEMPLATE_BRACKET_REG, missingfieldreplacement)
-            .trim();
-        copy = copy.replace(TEMPLATE_REG, missingfieldreplacement).trim();
+            .trim().replace(TEMPLATE_REG, missingfieldreplacement).trim();
     } else if (missingfield === "Remove (entire row)") {
         const lines = copy.split(/\r?\n/);
         // 	run function to determine where we still have double curly brackets
@@ -612,16 +367,9 @@ export function replaceMissingFields(
         }
         copy = lines.join("\n");
     }
-
     //Remove empty sections when there is no data
-    copy = copy.replace(
-        "## Abstract\n" + "\n" + "## Files and Links\n",
-        "## Files and Links\n"
-    );
-    copy = copy.replace(
-        "## Files and Links\n" + "\n" + "## Zotero Tags\n",
-        "## Zotero Tags\n"
-    );
+    copy = copy.replace("## Abstract\n" + "\n" + "## Files and Links\n", "## Files and Links\n");
+    copy = copy.replace("## Files and Links\n" + "\n" + "## Zotero Tags\n", "## Zotero Tags\n");
     copy = copy.replace("## Zotero Tags\n" + "\n", "\n");
 
     return copy;
@@ -646,13 +394,8 @@ export function createLocalFileLink(reference: Reference) {
         }
 
         const selectedfile: string =
-            "[" +
-            reference.attachments[attachmentindex].title +
-            "](file:///" + // added an extra "/" to make it work on Linux
-            encodeURI(
-                reference.attachments[attachmentindex].path.replaceAll(" ", " ")
-            ) +
-            ")"; //select the author
+            "[" + reference.attachments[attachmentindex].title + "](file:///" +
+            encodeURI(reference.attachments[attachmentindex].path.replaceAll(" ", " ")) + ")"; 
 
         filesList.push(selectedfile);
     }
@@ -662,7 +405,7 @@ export function createLocalFileLink(reference: Reference) {
 }
 
 export function createNoteTitle(
-    selectedEntry: Reference,
+    selectedEntry: Reference, 
     exportTitle: string
 ) {
     //Replace the placeholders
@@ -683,7 +426,10 @@ export function createNoteTitle(
     return exportTitle;
 }
 
-export function createNotePath(noteTitle: string, exportPath: string) {
+export function createNotePath(
+    noteTitle: string,
+    exportPath: string
+) {
     return resolvePath(`${exportPath}/${noteTitle}.md`)
 }
 
@@ -696,19 +442,13 @@ export function replaceTagList(
     // Copy the keywords extracted by Zotero and store them in an array
     selectedEntry.zoteroTags = [];
     if (selectedEntry.tags.length > 0) {
-        for (
-            let indexTag = 0;
-            indexTag < selectedEntry.tags.length;
-            indexTag++
-        ) {
+        for (let indexTag = 0; indexTag < selectedEntry.tags.length; indexTag++) {
             selectedEntry.zoteroTags.push(selectedEntry.tags[indexTag].tag);
         }
     }
 
     //add a space after the divided if it is not present
-    if (divider.slice(-1) !== " ") {
-        divider = divider + " ";
-    }
+    if (divider.slice(-1) !== " ") divider = divider + " ";
 
     //Create three arrays for the tags from the metadata, 
     // tags exported from the text and tags combined
@@ -721,109 +461,39 @@ export function replaceTagList(
     //Replace in the text the tags extracted by Zotero
     if (tagsZotero.length > 0) {
         const tagsZoteroBracket = tagsZotero.map(makeWiki);
-        metadata = replaceTemplate(
-            metadata,
-            `[[{{keywordsZotero}}]]`,
-            String(tagsZoteroBracket.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `[[{{keywordsZotero}}]]`, String(tagsZoteroBracket.join(divider)));
         const tagsZoteroQuotes = tagsZotero.map(makeQuotes);
-        metadata = replaceTemplate(
-            metadata,
-            `"{{keywordsZotero}}"`,
-            String(tagsZoteroQuotes.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `"{{keywordsZotero}}"`, String(tagsZoteroQuotes.join(divider)));
         const tagsZoteroTags = tagsZotero.map(makeTags);
-        metadata = replaceTemplate(
-            metadata,
-            `#{{keywordsZotero}}`,
-            String(tagsZoteroTags.join(divider))
-        );
-
-        metadata = replaceTemplate(
-            metadata,
-            `{{keywordsZotero}}`,
-            String(tagsZotero.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `#{{keywordsZotero}}`, String(tagsZoteroTags.join(divider)));
+        metadata = replaceTemplate(metadata, `{{keywordsZotero}}`, String(tagsZotero.join(divider)));
     }
 
     //Replace in the text the tags extracted from the PDF
     if (tagsPDF.length > 0) {
         const tagsPDFBracket = tagsPDF.map(makeWiki);
-        metadata = replaceTemplate(
-            metadata,
-            `[[{{keywordsPDF}}]]`,
-            String(tagsPDFBracket.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `[[{{keywordsPDF}}]]`, String(tagsPDFBracket.join(divider)));
         const tagsPDFQuotes = tagsPDF.map(makeQuotes);
-        metadata = replaceTemplate(
-            metadata,
-            `"{{keywordsPDF}}"`,
-            String(tagsPDFQuotes.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `"{{keywordsPDF}}"`, String(tagsPDFQuotes.join(divider)));
         const tagsPDFTags = tagsPDF.map(makeTags);
-        metadata = replaceTemplate(
-            metadata,
-            `#{{keywordsPDF}}`,
-            String(tagsPDFTags.join(divider))
-        );
-        metadata = replaceTemplate(
-            metadata,
-            `{{keywordsPDF}}`,
-            String(tagsPDF.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `#{{keywordsPDF}}`, String(tagsPDFTags.join(divider)));
+        metadata = replaceTemplate(metadata, `{{keywordsPDF}}`, String(tagsPDF.join(divider)));
     }
 
     //Replace in the text the tags extracted from the PDF 
     // combined with those extracted from the metadata
     if (tagsCombined.length > 0) {
         const tagsCombinedBracket = tagsCombined.map(makeWiki);
-        metadata = replaceTemplate(
-            metadata,
-            `[[{{keywords}}]]`,
-            String(tagsCombinedBracket.join(divider))
-        );
-        metadata = replaceTemplate(
-            metadata,
-            `[[{{keywordsAll}}]]`,
-            String(tagsCombinedBracket.join(divider))
-        );
-
+        metadata = replaceTemplate(metadata, `[[{{keywords}}]]`, String(tagsCombinedBracket.join(divider)));
+        metadata = replaceTemplate(metadata, `[[{{keywordsAll}}]]`, String(tagsCombinedBracket.join(divider)));
         const tagsCombinedQuotes = tagsCombined.map(makeQuotes);
-        metadata = replaceTemplate(
-            metadata,
-            `"{{keywordsAll}}"`,
-            String(tagsCombinedQuotes.join(divider))
-        );
-
-        metadata = replaceTemplate(
-            metadata,
-            `"{{keywords}}"`,
-            String(tagsCombinedQuotes.join(divider))
-        );
-
+        metadata = replaceTemplate(metadata, `"{{keywordsAll}}"`, String(tagsCombinedQuotes.join(divider)));
+        metadata = replaceTemplate(metadata, `"{{keywords}}"`, String(tagsCombinedQuotes.join(divider)));
         const tagsCombinedTags = tagsCombined.map(makeTags);
-        metadata = replaceTemplate(
-            metadata,
-            `#{{keywordsAll}}`,
-            String(tagsCombinedTags.join(divider))
-        );
-
-        metadata = replaceTemplate(
-            metadata,
-            `#{{keywords}}`,
-            String(tagsCombinedTags.join(divider))
-        );
-        metadata = replaceTemplate(
-            metadata,
-            `{{keywordsAll}}`,
-            String(tagsCombined.join(divider))
-        );
-
-        metadata = replaceTemplate(
-            metadata,
-            `{{keywords}}`,
-            String(tagsCombined.join(divider))
-        );
+        metadata = replaceTemplate(metadata, `#{{keywordsAll}}`, String(tagsCombinedTags.join(divider)));
+        metadata = replaceTemplate(metadata, `#{{keywords}}`, String(tagsCombinedTags.join(divider)));
+        metadata = replaceTemplate(metadata, `{{keywordsAll}}`, String(tagsCombined.join(divider)));
+        metadata = replaceTemplate(metadata, `{{keywords}}`, String(tagsCombined.join(divider)));
     }
 
     if (selectedEntry.zoteroTags.length == 0) {
@@ -834,8 +504,10 @@ export function replaceTagList(
     return metadata;
 }
 
-export function zoteroAppInfo(selectedEntry: Reference, settings: ZoteroAnnotationsPluginSettings) {
-
+export function zoteroAppInfo(
+    selectedEntry: Reference,
+    settings: ZoteroAnnotationsPluginSettings
+) {
     //Check the path to the data folder
     if (selectedEntry.attachments[0] !== undefined) {
         //identify the folder on the local computer where zotero/storage is found
@@ -844,47 +516,26 @@ export function zoteroAppInfo(selectedEntry: Reference, settings: ZoteroAnnotati
         let zoteroBuildWindows: boolean = undefined;
 
         //check if the base path where the attachment is stored is in Zotero/storage
-        const zoteroStorageMac = new RegExp(
-            /.+?(?=Zotero\/storage)Zotero\/storage\//gm
-        );
+        const zoteroStorageMac = new RegExp(/.+?(?=Zotero\/storage)Zotero\/storage\//gm);
 
         if (zoteroStorageMac.test(selectedEntry.attachments[0].path)) {
-            pathZoteroStorage = String(
-                selectedEntry.attachments[0].path.match(zoteroStorageMac)
-            );
+            pathZoteroStorage = String(selectedEntry.attachments[0].path.match(zoteroStorageMac));
             zoteroBuildWindows = false;
         }
 
-        const zoteroStorageWindows = new RegExp(
-            /.+?(?=Zotero\\storage\\)Zotero\\storage\\/gm
-        );
+        const zoteroStorageWindows = new RegExp(/.+?(?=Zotero\\storage\\)Zotero\\storage\\/gm);
 
         if (zoteroStorageWindows.test(selectedEntry.attachments[0].path)) {
-            pathZoteroStorage = String(
-                selectedEntry.attachments[0].path.match(
-                    zoteroStorageWindows
-                )
-            );
+            pathZoteroStorage = String(selectedEntry.attachments[0].path.match(zoteroStorageWindows));
             zoteroBuildWindows = true;
         }
 
-        if (
-            pathZoteroStorage.length == 0 &&
-            settings.zoteroStoragePathManual.length > 0
-        ) {
+        if (pathZoteroStorage.length == 0 && settings.zoteroStoragePathManual.length > 0) {
             pathZoteroStorage = settings.zoteroStoragePathManual;
-            if (pathZoteroStorage.toLowerCase().endsWith("\\zotero")) {
-                pathZoteroStorage = pathZoteroStorage + "\\storage\\";
-            }
-            if (pathZoteroStorage.toLowerCase().endsWith("\\zotero\\")) {
-                pathZoteroStorage = pathZoteroStorage + "storage\\";
-            }
-            if (pathZoteroStorage.toLowerCase().endsWith("/zotero")) {
-                pathZoteroStorage = pathZoteroStorage + "/storage/";
-            }
-            if (pathZoteroStorage.toLowerCase().endsWith("/zotero/")) {
-                pathZoteroStorage = pathZoteroStorage + "storage/";
-            }
+            if (pathZoteroStorage.toLowerCase().endsWith("\\zotero")) pathZoteroStorage = pathZoteroStorage + "\\storage\\"
+            if (pathZoteroStorage.toLowerCase().endsWith("\\zotero\\")) pathZoteroStorage = pathZoteroStorage + "storage\\"
+            if (pathZoteroStorage.toLowerCase().endsWith("/zotero")) pathZoteroStorage = pathZoteroStorage + "/storage/"
+            if (pathZoteroStorage.toLowerCase().endsWith("/zotero/")) pathZoteroStorage = pathZoteroStorage + "storage/"
         }
         const zoteroInfo = {
             pathZoteroStorage: pathZoteroStorage,
@@ -895,6 +546,9 @@ export function zoteroAppInfo(selectedEntry: Reference, settings: ZoteroAnnotati
 
 }
 
+export function openNoteAfterImport(file: TFile, isOpen: boolean) {
+    if (isOpen) this.app.workspace.getLeaf(false).openFile(file);
+}
 
 export function compareOldNewNote(
     existingNote: string,
@@ -906,10 +560,7 @@ export function compareOldNewNote(
     const newLineRegex = RegExp(/\n/gm);
     const positionNewLine: number[] = [];
     let match = undefined;
-    while ((match = newLineRegex.exec(existingNote))) {
-        positionNewLine.push(match.index);
-    }
-
+    while ((match = newLineRegex.exec(existingNote))) { positionNewLine.push(match.index); }
     //Create an array to record where in the old 
     // note the matches with the new note are found
     const positionOldNote: number[] = [0];
@@ -917,18 +568,11 @@ export function compareOldNewNote(
     // stored in the old note and their position in the old note
     const newNoteInsertText: string[] = [];
     const newNoteInsertPosition: number[] = [];
-
     //Split the new note into sentences
     const newNoteArray = newNote.split("\n");
-
     //Remove markdown formatting from the beginning and end of each line
-
     //loop through each of the lines extracted in the note
-    for (
-        let indexLines = 0;
-        indexLines < newNoteArray.length;
-        indexLines++
-    ) {
+    for (let indexLines = 0; indexLines < newNoteArray.length; indexLines++) {
         let segmentWhole = "";
         let segmentFirstHalf = "";
         let segmentSecondHalf = "";
@@ -940,7 +584,6 @@ export function compareOldNewNote(
         const positionArray: number[] = [-1];
 
         // Select the line to be searched
-
         //Remove formatting added by bibnotes at the beginning of the line
         let selectedNewLine = newNoteArray[indexLines];
         selectedNewLine = selectedNewLine.trim();
@@ -952,12 +595,8 @@ export function compareOldNewNote(
         selectedNewLine = selectedNewLine.replace(/^"/gm, "");
 
         //Remove the authorkey at the end of the line
-        const authorKey_Zotero = new RegExp(
-            "\\(" + authorKey + ", \\d+, p. \\d+\\)$"
-        );
-        const authorKey_Zotfile = new RegExp(
-            "\\(" + authorKey + " \\d+:\\d+\\)$"
-        );
+        const authorKey_Zotero = new RegExp("\\(" + authorKey + ", \\d+, p. \\d+\\)$");
+        const authorKey_Zotfile = new RegExp("\\(" + authorKey + " \\d+:\\d+\\)$");
         selectedNewLine = selectedNewLine.replace(authorKey_Zotero, "");
         selectedNewLine = selectedNewLine.replace(authorKey_Zotfile, "");
 
@@ -968,15 +607,11 @@ export function compareOldNewNote(
         selectedNewLine = selectedNewLine.replace(/"$/gm, "");
 
         //Calculate the length of the highlighted text
-        if (selectedNewLine == undefined) {
-            continue;
-        }
+        if (selectedNewLine == undefined) continue;
 
         const lengthExistingLine = selectedNewLine.length;
         //Calculate the length of the comment text
-        if (lengthExistingLine === 0) {
-            continue;
-        }
+        if (lengthExistingLine === 0) continue;
 
         //CHECK THE PRESENCE OF THE HIGHLIGHTED TEXT IN THE EXISTING ONE
 
@@ -986,40 +621,18 @@ export function compareOldNewNote(
             segmentWhole = selectedNewLine;
             positionArray.push(existingNote.indexOf(segmentWhole));
         } else if (lengthExistingLine >= 30 && lengthExistingLine < 150) {
-            segmentFirstHalf = selectedNewLine.substring(
-                0,
-                lengthExistingLine / 2
-            );
+            segmentFirstHalf = selectedNewLine.substring(0, lengthExistingLine / 2);
             positionArray.push(existingNote.indexOf(segmentFirstHalf));
-
-            segmentSecondHalf = selectedNewLine.substring(
-                lengthExistingLine / 2 + 1,
-                lengthExistingLine
-            );
+            segmentSecondHalf = selectedNewLine.substring(lengthExistingLine / 2 + 1, lengthExistingLine);
             positionArray.push(existingNote.indexOf(segmentSecondHalf));
         } else if (lengthExistingLine >= 150) {
-            segmentFirstQuarter = selectedNewLine.substring(
-                0,
-                lengthExistingLine / 4
-            );
+            segmentFirstQuarter = selectedNewLine.substring(0, lengthExistingLine / 4);
             positionArray.push(existingNote.indexOf(segmentFirstQuarter));
-
-            segmentSecondQuarter = selectedNewLine.substring(
-                lengthExistingLine / 4 + 1,
-                lengthExistingLine / 2
-            );
+            segmentSecondQuarter = selectedNewLine.substring(lengthExistingLine / 4 + 1, lengthExistingLine / 2);
             positionArray.push(existingNote.indexOf(segmentSecondQuarter));
-
-            segmentThirdQuarter = selectedNewLine.substring(
-                lengthExistingLine / 2 + 1,
-                (3 * lengthExistingLine) / 4
-            );
+            segmentThirdQuarter = selectedNewLine.substring(lengthExistingLine / 2 + 1, (3 * lengthExistingLine) / 4);
             positionArray.push(existingNote.indexOf(segmentThirdQuarter));
-
-            segmentFourthQuarter = selectedNewLine.substring(
-                (3 * lengthExistingLine) / 4 + 1,
-                lengthExistingLine
-            );
+            segmentFourthQuarter = selectedNewLine.substring((3 * lengthExistingLine) / 4 + 1, lengthExistingLine);
             positionArray.push(existingNote.indexOf(segmentFourthQuarter));
         }
 
@@ -1041,9 +654,7 @@ export function compareOldNewNote(
     }
 
     let doubleSpaceAdd = "";
-    if (settings.isDoubleSpaced) {
-        doubleSpaceAdd = "\n";
-    }
+    if (settings.isDoubleSpaced) doubleSpaceAdd = "\n";
 
     //Add the new annotations into the old note
     for (
@@ -1053,161 +664,91 @@ export function compareOldNewNote(
     ) {
         const insertText = newNoteInsertText[indexNoteElements];
         const insertPosition = newNoteInsertPosition[indexNoteElements];
-        existingNote =
-            existingNote.slice(0, insertPosition) +
-            doubleSpaceAdd +
-            "\n" +
-            insertText +
+        existingNote = existingNote.slice(0, insertPosition) +
+            doubleSpaceAdd + "\n" + insertText +
             existingNote.slice(insertPosition);
     }
-    if (settings.saveManualEdits == "Save Entire Note") {
-        return existingNote;
-    }
+    if (settings.saveManualEdits == "Save Entire Note") return existingNote
     if (settings.saveManualEdits == "Select Section") {
         //identify the keyword marking the beginning and the end of the section not to be overwritten
         const startSave = settings.saveManualEditsStart;
         const endSave = settings.saveManualEditsEnd;
-
         //identify the keyword identifying the beginning of the section to be preserved is empty, 
         // the position is the beginning of the string. Otherwise find the match in the text
         let startSaveOld = 0;
-        if (startSave !== "") {
-            startSaveOld = existingNote.indexOf(startSave);
-        }
-        if (startSaveOld < 0) {
-            startSaveOld = 0;
-        }
+        if (startSave !== "") startSaveOld = existingNote.indexOf(startSave)
+        if (startSaveOld < 0) startSaveOld = 0
 
         //identify the keyword identifying the end of the section to be preserved. 
         // If is empty, the position is the end of the string. Otherwise find the match in the text
         let endSaveOld: number = existingNote.length;
-        if (endSave !== "") {
-            endSaveOld = existingNote.indexOf(endSave) + endSave.length;
-        }
-        if (endSaveOld < 0) {
-            endSaveOld = existingNote.length;
-        }
+        if (endSave !== "") endSaveOld = existingNote.indexOf(endSave) + endSave.length
+        if (endSaveOld < 0) endSaveOld = existingNote.length
 
         //Find the sections of the existing note to be preserved
-        const existingNotePreserved = existingNote.substring(
-            startSaveOld,
-            endSaveOld
-        );
-
+        const existingNotePreserved = existingNote.substring(startSaveOld, endSaveOld);
         //identify the keyword identifying the beginning of the section to be preserved is empty, 
         // the position is the beginning of the string. Otherwise find the match in the text
         let startSaveNew = 0;
-        if (startSave !== "") {
-            startSaveNew = newNote.indexOf(startSave);
-        }
-        if (startSaveNew < 0) {
-            startSaveNew = 0;
-        }
-
+        if (startSave !== "") startSaveNew = newNote.indexOf(startSave)
+        if (startSaveNew < 0) startSaveNew = 0
         //identify the keyword identifying the ebd of the section to be preserved is empty, 
         // the position is the end of the string. Otherwise find the match in the text
         let endSaveNew: number = newNote.length;
-        if (endSave !== "") {
-            endSaveNew = newNote.indexOf(endSave) + endSave.length;
-        }
-        if (endSaveNew < 0) {
-            endSaveNew = newNote.length;
-        }
+        if (endSave !== "") endSaveNew = newNote.indexOf(endSave) + endSave.length;
+        if (endSaveNew < 0) endSaveNew = newNote.length
 
         //Find the sections of the existing note before the one to be preserved
         const newNotePreservedBefore = newNote.substring(0, startSaveNew);
         //Find the sections of the existing note after the one to be preserved
-        const newNotePreservedAfter = newNote.substring(
-            endSaveNew,
-            newNote.length
-        );
-
-        const newNoteCombined =
-            newNotePreservedBefore +
-            existingNotePreserved +
-            newNotePreservedAfter;
+        const newNotePreservedAfter = newNote.substring(endSaveNew, newNote.length)
+        const newNoteCombined = newNotePreservedBefore + existingNotePreserved + newNotePreservedAfter;
 
         return newNoteCombined;
     }
 }
 
 
-export async function createNote(selectedEntry: Reference, settings: ZoteroAnnotationsPluginSettings): Promise<void> {
+export async function createNote(
+    selectedEntry: Reference,
+    settings: ZoteroAnnotationsPluginSettings
+): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
     const authorKey = createAuthorKey(selectedEntry.creators);
     // set the authorkey field (with or without first name) on the 
     // entry to use when creating the title and to replace in the template
     selectedEntry.authorKey = authorKey;
-    selectedEntry.authorKeyInitials = createAuthorKeyInitials(
-        selectedEntry.creators
-    );
-    selectedEntry.authorKeyFullName = createAuthorKeyFullName(
-        selectedEntry.creators
-    );
+    selectedEntry.authorKeyInitials = createAuthorKeyInitials(selectedEntry.creators);
+    selectedEntry.authorKeyFullName = createAuthorKeyFullName(selectedEntry.creators);
 
     // Load Template
     const templateNote = await importTemplate(settings);
-
     // Create the metadata
     let litnote: string = parseMetadata(selectedEntry, settings, templateNote);
-
     // Define the name and full path of the file to be exported
     const noteTitle = createNoteTitle(selectedEntry, settings.importFileName,);
     const notePath = createNotePath(noteTitle, settings.importPath)
     // Extract the annotation and the keyword from the text
     const resultAnnotations = extractAnnotation(selectedEntry, notePath, settings);
-
     // Replace annotations in the template
-    litnote = litnote.replace(
-        "{{PDFNotes}}",
-        resultAnnotations.extractedAnnotations
-    );
-    litnote = litnote.replace(
-        "{{UserNotes}}",
-        resultAnnotations.extractedUserNote
-    );
-    litnote = litnote.replace(
-        "{{Images}}",
-        resultAnnotations.extractedImages
-    );
-
+    litnote = litnote.replace("{{PDFNotes}}", resultAnnotations.extractedAnnotations);
+    litnote = litnote.replace("{{UserNotes}}", resultAnnotations.extractedUserNote);
+    litnote = litnote.replace("{{Images}}", resultAnnotations.extractedImages);
     let extractedKeywords = resultAnnotations.extractedKeywords;
-    if (extractedKeywords == undefined) {
-        extractedKeywords = [];
-    }
+    if (extractedKeywords == undefined) { extractedKeywords = []; }
 
     // Join the tags in the metadata with the tags extracted in the text and replace them in the text
-    litnote = replaceTagList(
-        selectedEntry,
-        extractedKeywords,
-        litnote,
-        settings.multipleFieldsDivider
-    );
-
+    litnote = replaceTagList(selectedEntry, extractedKeywords, litnote, settings.multipleFieldsDivider);
     // delete the missing fields in the metadata
     const missingFieldSetting = settings.missingfield;
-    litnote = replaceMissingFields(
-        litnote,
-        missingFieldSetting,
-        settings.missingfieldreplacement
-    );
+    litnote = replaceMissingFields(litnote, missingFieldSetting, settings.missingfieldreplacement);
     // Compare old note and new note
     // Check the option in settings.saveManualEdits.
-    if (
-        settings.saveManualEdits !== "Overwrite Entire Note" &&
-        fs.existsSync(notePath)
-    ) {
+    if (settings.saveManualEdits !== "Overwrite Entire Note" && fs.existsSync(notePath)) {
         // In that case compare existing file with new notes. If false don't look at existing note
         // Check if an old version exists. If the old version has annotations then add the new annotation to the old annotaiton
-
         const existingNoteAll = String(fs.readFileSync(notePath));
-
-        litnote = compareOldNewNote(
-            existingNoteAll,
-            litnote,
-            authorKey,
-            settings
-        );
+        litnote = compareOldNewNote(existingNoteAll, litnote, authorKey, settings);
     }
     fs.writeFile(notePath, litnote, err => {
         if (err) {
@@ -1220,17 +761,14 @@ export async function createNote(selectedEntry: Reference, settings: ZoteroAnnot
 
 
 export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
-    console.log("Updating Zotero library");
+    // console.log("Updating Zotero library");
     // Check if the json file exists
     const jsonPath = resolvePath(settings.bibPath)
-    if (!fs.existsSync(jsonPath)) {
-        new Notice("No BetterBibTex Json file found at " + jsonPath);
-    }
+    if (!fs.existsSync(jsonPath)) new Notice("No BetterBibTex Json file found at " + jsonPath);
     const rawdata = fs.readFileSync(jsonPath);
     const data = JSON.parse(rawdata.toString()); // rawdata is a buffer, converted to string
 
     const bibtexArray: string[] = [];
-
     // Check the last time the library was updated
     const lastUpdate = new Date(settings.lastUpdateDate);
     // loop through all the entries in the bibliography to find out which ...
@@ -1249,12 +787,8 @@ export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
         for (let index = 0; index < selectedEntry.notes.length; index++) {
             noteDateModifiedArray.push(selectedEntry.notes[index].dateModified);
             noteDateModifiedArray.sort((firstElement, secondElement) => {
-                if (firstElement > secondElement) {
-                    return -1;
-                }
-                if (firstElement < secondElement) {
-                    return 1;
-                }
+                if (firstElement > secondElement) return -1
+                if (firstElement < secondElement) return 1
                 return 0;
             });
         }
@@ -1275,9 +809,3 @@ export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
     //Update the date when the update was last done
     settings.lastUpdateDate = new Date();
 };
-
-export function openNoteAfterImport(file: TFile, isOpen: boolean) {
-    if (isOpen) {
-        this.app.workspace.getLeaf(false).openFile(file);
-    }
-}

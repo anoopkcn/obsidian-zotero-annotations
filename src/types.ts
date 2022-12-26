@@ -1,4 +1,4 @@
-export interface ZoteroAnnotationsPluginSettings {
+export interface ZoteroAnnotationsSettings {
     bibPath: string;
     templateContent: string;
     templatePath: string;

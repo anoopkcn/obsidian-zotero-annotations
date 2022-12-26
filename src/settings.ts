@@ -1,5 +1,5 @@
-import ZoteroAnnotations from "./main";
 import { App, PluginSettingTab, Setting } from "obsidian";
+import ZoteroAnnotations from "./main";
 
 export class SettingsTab extends PluginSettingTab {
     plugin: ZoteroAnnotations;

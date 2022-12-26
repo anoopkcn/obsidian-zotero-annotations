@@ -1,11 +1,11 @@
 import { FileSystemAdapter, TFile, normalizePath } from "obsidian";
 import path from "path";
+import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, PLAINTEMPLATE } from "./constants";
 import {
-    ZoteroAnnotationsPluginSettings,
+    ZoteroAnnotationsSettings,
     Reference,
 } from "./types";
 
-import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, PLAINTEMPLATE } from "./constants";
 
 // Get normalized path
 export const resolvePath = function (rawPath: string): string {
@@ -41,7 +41,7 @@ export function truncate(str: string, n: number) {
 
 // import template from file if present or set it to the default template
 export async function importTemplate(
-    settings: ZoteroAnnotationsPluginSettings
+    settings: ZoteroAnnotationsSettings
 ): Promise<string> {
     const template = this.app.metadataCache.getFirstLinkpathDest(normalizePath(settings.templatePath), "");
     if (template && template instanceof TFile) {
@@ -282,7 +282,7 @@ export function insertKeywordList(
 
 export function getZoteroAppInfo(
     selectedEntry: Reference,
-    settings: ZoteroAnnotationsPluginSettings
+    settings: ZoteroAnnotationsSettings
 ) {
     //Check the path to the data folder
     if (selectedEntry.attachments[0] !== undefined) {

@@ -2,7 +2,7 @@ import { Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
 import { fuzzySelectReference } from "./modal";
 import { SettingsTab } from "./settings";
-import { ZoteroAnnotationsPluginSettings } from "./types";
+import { ZoteroAnnotationsSettings } from "./types";
 import { updateNotes } from "./notes";
 
 // This is the main plugin class
@@ -15,7 +15,7 @@ import { updateNotes } from "./notes";
 // 2. Save settings function for the settings page
 
 export default class ZoteroAnnotations extends Plugin {
-    settings: ZoteroAnnotationsPluginSettings;
+    settings: ZoteroAnnotationsSettings;
 
     async onload() {
         await this.loadSettings();

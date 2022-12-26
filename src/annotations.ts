@@ -1,11 +1,11 @@
 
 import * as fs from "fs";
 import path from "path";
-import { AnnotationElements, ZoteroAnnotationsPluginSettings, ZoteroInfo } from "./types";
 import { Notice, normalizePath } from "obsidian";
+import { AnnotationElements, ZoteroAnnotationsSettings, ZoteroInfo } from "./types";
 import { resolvePath } from "./utils";
 
-export function createFormatting(settings: ZoteroAnnotationsPluginSettings) {
+export function createFormatting(settings: ZoteroAnnotationsSettings) {
     const {
         highlightCustomTextAfter,
         highlightCustomTextBefore,
@@ -127,7 +127,7 @@ export function createFormatting(settings: ZoteroAnnotationsPluginSettings) {
 export function formatAnnotationElements(
     noteElements: AnnotationElements[],
     citeKey: string,
-    settings: ZoteroAnnotationsPluginSettings,
+    settings: ZoteroAnnotationsSettings,
     zoteroInfo: ZoteroInfo
 ) {
     const { isDoubleSpaced } = settings;
@@ -499,8 +499,9 @@ export function formatAnnotationElements(
             indexRowsToBeRemoved.push(i - 1);
         }
 
-        //PREPEND COMMENT TO THE HIGHLIGHTED SENTENCE
-        //check the setting commentPrependDefault. If true, then everytime there is an highlight with a comment, prepend the comment to the highlight
+        // PREPEND COMMENT TO THE HIGHLIGHTED SENTENCE
+        // check the setting commentPrependDefault. If true,
+        // then everytime there is an highlight with a comment, prepend the comment to the highlight
         if (
             settings.commentPrependDefault === true &&
             lineElements.highlightText !== "" &&

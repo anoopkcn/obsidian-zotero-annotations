@@ -1,6 +1,8 @@
 import { Notice, TFile } from "obsidian";
 import * as fs from "fs";
-import { Reference, ZoteroAnnotationsPluginSettings } from "./types";
+import { Reference, ZoteroAnnotationsSettings } from "./types";
+import { extractAnnotation, parseMetadata } from "./parser";
+import { getCreatorFullInitials, getCreatorFullNames, getCreatorKey } from "./creators";
 import {
     createNotePath,
     getNoteTitle,
@@ -9,8 +11,6 @@ import {
     replaceMissingFields,
     resolvePath
 } from "./utils";
-import { extractAnnotation, parseMetadata } from "./parser";
-import { getCreatorFullInitials, getCreatorFullNames, getCreatorKey } from "./creators";
 
 export function openNoteAfterImport(file: TFile, isOpen: boolean) {
     if (isOpen) this.app.workspace.getLeaf(false).openFile(file);
@@ -20,7 +20,7 @@ export function compareOldNewNote(
     existingNote: string,
     newNote: string,
     authorKey: string,
-    settings: ZoteroAnnotationsPluginSettings
+    settings: ZoteroAnnotationsSettings
 ) {
     //Find the position of the line breaks in the old note
     const newLineRegex = RegExp(/\n/gm);
@@ -177,7 +177,7 @@ export function compareOldNewNote(
 
 export async function createNote(
     selectedEntry: Reference,
-    settings: ZoteroAnnotationsPluginSettings
+    settings: ZoteroAnnotationsSettings
 ): Promise<void> {
     // Extract the reference within bracket to faciliate comparison
     const authorKey = getCreatorKey(selectedEntry.creators);
@@ -195,7 +195,7 @@ export async function createNote(
     const noteTitle = getNoteTitle(selectedEntry, settings.importFileName,);
     const notePath = createNotePath(noteTitle, settings.importPath)
     // Extract the annotation and the keyword from the text
-    const resultAnnotations = extractAnnotation(selectedEntry, notePath, settings);
+    const resultAnnotations = extractAnnotation(selectedEntry, settings);
     // Replace annotations in the template
     litnote = litnote.replace("{{PDFNotes}}", resultAnnotations.extractedAnnotations);
     litnote = litnote.replace("{{UserNotes}}", resultAnnotations.extractedUserNote);
@@ -226,7 +226,7 @@ export async function createNote(
 }
 
 
-export function updateNotes(settings: ZoteroAnnotationsPluginSettings) {
+export function updateNotes(settings: ZoteroAnnotationsSettings) {
     // console.log("Updating Zotero library");
     // Check if the json file exists
     const jsonPath = resolvePath(settings.bibPath)

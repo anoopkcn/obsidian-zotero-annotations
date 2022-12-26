@@ -1,4 +1,3 @@
-import ZoteroAnnotations from "./main";
 import * as fs from "fs";
 import {
     App,
@@ -11,18 +10,16 @@ import {
     normalizePath,
     renderMatches,
 } from "obsidian";
-
+import ZoteroAnnotations from "./main";
+import { createNote, openNoteAfterImport } from "./notes";
+import { getCreatorFullNames } from "./creators";
 import { Reference } from "./types";
-
 import {
     getNoteTitle,
     orderByDateModified,
     resolvePath,
     truncate,
 } from "./utils";
-import { createNote, openNoteAfterImport } from "./notes";
-import { getCreatorFullNames } from "./creators";
-
 
 export class fuzzySelectReference extends FuzzySuggestModal<Reference> {
     plugin: ZoteroAnnotations;

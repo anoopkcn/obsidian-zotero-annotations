@@ -1,4 +1,4 @@
-import { ZoteroAnnotationsPluginSettings } from "./types";
+import { ZoteroAnnotationsSettings } from "./types";
 
 export const PLAINTEMPLATE = `
 # {{title}}
@@ -45,7 +45,7 @@ export const PLAINTEMPLATE = `
 {{PDFNotes}}
 `;
 
-export const DEFAULT_SETTINGS: ZoteroAnnotationsPluginSettings = {
+export const DEFAULT_SETTINGS: ZoteroAnnotationsSettings = {
     bibPath: "",
     templateContent: PLAINTEMPLATE,
     templatePath: "",

@@ -6,6 +6,12 @@ import {
     Reference,
 } from "./types";
 
+export const fragWithHTML = (html: string) =>
+    createFragment((frag) => (frag.createDiv().innerHTML = html));
+
+export const errorlog = (data: {}) => {
+    console.error({ plugin: "Zotero Annotations", ...data });
+};
 
 // Get normalized path
 export const resolvePath = function (rawPath: string): string {

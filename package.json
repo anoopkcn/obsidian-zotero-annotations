@@ -1,6 +1,6 @@
 {
     "name": "obsidian-zotero-annotations",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "description": "Plugin to import and format annotations from Zotero",
     "main": "main.js",
     "scripts": {

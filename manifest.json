@@ -1,7 +1,7 @@
 {
     "id": "obsidian-zotero-annotations",
     "name": "Zotero Annotations",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "Plugin to import metadata and annotations from Zotero",
     "author": "Anoop K. Chandran",
     "authorUrl": "anoopkcn.com",

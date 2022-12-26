@@ -160,15 +160,15 @@ export const createAuthorKeyFullName = (creators: CreatorArray) => {
     //Adjust the authorKey depending on the number of authors
     if (authorKey.length == 1) { authorKeyFixed = authorKey[0]; }
     if (authorKey.length == 2) { authorKeyFixed = authorKey[0] + " and " + authorKeyReverse[1]; }
-    if (authorKey.length == 3) { authorKeyFixed = authorKey[0] + ", " + authorKeyReverse[1] + " and " + authorKeyReverse[2]; }
-    if (authorKey.length > 3) { authorKeyFixed = authorKey[0] + " et al."; }
+    // if (authorKey.length == 3) { authorKeyFixed = authorKey[0] + ", " + authorKeyReverse[1] + " and " + authorKeyReverse[2]; }
+    if (authorKey.length >= 3) { authorKeyFixed = authorKey[0] + " et al."; }
     if (authorKey.length > 0) { return authorKeyFixed; }
     //If there are no authors (because it is an edited book), 
     // then returns the name of the editors
     if (editorKey.length == 1) { editorKeyFixed = editorKey[0]; }
     if (editorKey.length == 2) { editorKeyFixed = editorKey[0] + " and " + editorKeyReverse[1]; }
-    if (editorKey.length == 3) { editorKeyFixed = editorKey[0] + ", " + editorKeyReverse[1] + " and " + editorKeyReverse[2]; }
-    if (authorKey.length > 3) { editorKeyFixed = editorKey[0] + " et al."; }
+    // if (editorKey.length == 3) { editorKeyFixed = editorKey[0] + ", " + editorKeyReverse[1] + " and " + editorKeyReverse[2]; }
+    if (authorKey.length >= 3) { editorKeyFixed = editorKey[0] + " et al."; }
     if (editorKey.length > 0) { return editorKeyFixed; }
 };
 

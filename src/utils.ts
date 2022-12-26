@@ -7,7 +7,6 @@ import {
 
 import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
 
-
 // Get normalized path
 export const resolvePath = function (rawPath: string): string {
     const vaultRoot = this.app.vault.adapter instanceof FileSystemAdapter

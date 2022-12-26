@@ -5,7 +5,7 @@ import {
     Reference,
 } from "./types";
 
-import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, templatePlain } from "./constants";
+import { TEMPLATE_BRACKET_REG, TEMPLATE_REG, PLAINTEMPLATE } from "./constants";
 
 // Get normalized path
 export const resolvePath = function (rawPath: string): string {
@@ -48,7 +48,7 @@ export async function importTemplate(
         const data = await this.app.vault.read(template);
         return data;
     } else {
-        return templatePlain;
+        return PLAINTEMPLATE;
     }
 }
 

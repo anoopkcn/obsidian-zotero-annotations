@@ -1,6 +1,6 @@
 import { ZoteroAnnotationsPluginSettings } from "./types";
 
-export const templatePlain = `
+export const PLAINTEMPLATE = `
 # {{title}}
 
 ## Metadata
@@ -47,7 +47,7 @@ export const templatePlain = `
 
 export const DEFAULT_SETTINGS: ZoteroAnnotationsPluginSettings = {
     bibPath: "",
-    templateContent: templatePlain,
+    templateContent: PLAINTEMPLATE,
     templatePath: "",
     templateType: "Admonition",
     lastUpdateDate: new Date("1990-01-01T00:00:00"),

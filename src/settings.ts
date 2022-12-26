@@ -279,7 +279,7 @@ export class SettingsTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName("Open the updated note")
             .setDesc(
-                "Select whether to open note in the current view after updating note. Toggle On: Open the updated note"
+                "Select whether to open note in the current view after updating note. This option will not affect when updating all notes at once. Toggle On: Open the updated note"
             )
             .addToggle((t) =>
                 t

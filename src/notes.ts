@@ -1,3 +1,6 @@
+//Solution copied from obsidian-bibnotes: https://github.com/stefanopagliari/bibnotes/blob/master/src/main.ts
+
+
 import { Notice, TFile } from "obsidian";
 import * as fs from "fs";
 import { Reference, ZoteroAnnotationsSettings } from "./types";

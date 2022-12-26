@@ -18,7 +18,7 @@ export function resolvePath(rawPath: string): string {
     return path.normalize(path.resolve(vaultRoot, rawPath))
 }
 
-// convert camelCase to Normal Case
+// convert camelCase -> Camel Case
 export function camelToNormalCase(str: string) {
     return (
         str.replace(/([A-Z])/g, " $1").replace(/^./, function (str) {
@@ -78,6 +78,30 @@ export function replaceTemplate(
 export const makeWiki = (str: string) => "[[" + str + "]]";
 export const makeQuotes = (str: string) => '"' + str + '"';
 export const makeTags = (str: string) => "#" + str;
+
+export function removeQuoteFromStart(
+    quote: string,
+    annotation: string
+) {
+    let copy = annotation.slice();
+    while (copy.charAt(0) === quote) copy = copy.substring(1);
+    return copy;
+}
+export function removeQuoteFromEnd(
+    quote: string,
+    annotation: string
+) {
+    let copy = annotation.slice();
+    while (copy[copy.length - 1] === quote) copy = copy.substring(0, copy.length - 1);
+    return copy;
+}
+
+export function orderByDateModified(a: Reference, b: Reference) {
+    if (a.dateModified > b.dateModified) return -1
+    if (a.dateModified < b.dateModified) return 1
+    return 0;
+}
+
 
 export const createAuthorKey = (creators: CreatorArray) => {
     const authorKey: string[] = [];
@@ -211,39 +235,18 @@ export const createAuthorKeyInitials = (creators: CreatorArray) => {
     if (editorKey.length > 0) return editorKeyFixed
 };
 
-export function removeQuoteFromStart(
-    quote: string,
-    annotation: string
-) {
-    let copy = annotation.slice();
-    while (copy.charAt(0) === quote) copy = copy.substring(1);
-    return copy;
-}
-export function removeQuoteFromEnd(
-    quote: string,
-    annotation: string
-) {
-    let copy = annotation.slice();
-    while (copy[copy.length - 1] === quote) copy = copy.substring(0, copy.length - 1);
-    return copy;
-}
-
-export function orderByDateModified(a: Reference, b: Reference) {
-    if (a.dateModified > b.dateModified) return -1
-    if (a.dateModified < b.dateModified) return 1
-    return 0;
-}
-
-export function formatCreatorsName(
+export function arrangeCreatorName(
     creator: Creator,
     nameCustom: string
 ) {
-    // when the creator only has a name (no first or last name) this works just fine
+    const isFirstName = creator.hasOwnProperty("firstName")
+    const isLastName = creator.hasOwnProperty("lastName")
+
     if (creator.hasOwnProperty("name")) {
         nameCustom = creator.name;
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (creator.hasOwnProperty("lastName") && creator.hasOwnProperty("firstName")) {
+    } else if (isLastName && isFirstName) {
         nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
         nameCustom = nameCustom.replace("{{firstName}}", creator.firstName);
         const getInitials = function (string: string) {
@@ -256,17 +259,13 @@ export function formatCreatorsName(
         nameCustom = nameCustom.replace("{{firstNameInitials}}", getInitials(creator.firstName));
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (creator.hasOwnProperty("lastName") && !creator.hasOwnProperty("firstName")) {
+    } else if (isLastName && !isFirstName) {
         nameCustom = nameCustom.replace("{{lastName}}", creator.lastName);
-        nameCustom = nameCustom.replace("; {{firstName}}", creator.firstName);
-        nameCustom = nameCustom.replace(", {{firstName}}", creator.firstName);
         nameCustom = nameCustom.replace("{{firstName}}", "");
         nameCustom = nameCustom.trim();
         return nameCustom;
-    } else if (!creator.hasOwnProperty("lastName") && creator.hasOwnProperty("firstName")
+    } else if (!isLastName && isFirstName
     ) {
-        nameCustom = nameCustom.replace("; {{lastName}}", creator.firstName);
-        nameCustom = nameCustom.replace(", {{lastName}}", creator.firstName);
         nameCustom = nameCustom.replace("{{lastName}}", "");
         nameCustom = nameCustom.replace("{{firstName}}", creator.firstName);
         nameCustom = nameCustom.trim();
@@ -285,7 +284,7 @@ export const createCreatorList = (
     const creatorList: string[] = [];
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex]; //select the author
-        if (creator.creatorType === typeCreator) { creatorList.push(formatCreatorsName(creator, nameFormat)); }
+        if (creator.creatorType === typeCreator) { creatorList.push(arrangeCreatorName(creator, nameFormat)); }
     }
 
     const creatorListBracket = creatorList.map(makeWiki);
@@ -312,7 +311,7 @@ export const createCreatorAllList = (
     const creatorList: string[] = [];
     for (let creatorindex = 0; creatorindex < creators.length; creatorindex++) {
         const creator: Creator = creators[creatorindex]; //select the author
-        creatorList.push(formatCreatorsName(creator, nameFormat));
+        creatorList.push(arrangeCreatorName(creator, nameFormat));
     }
     const creatorListBracket = creatorList.map(makeWiki);
     const creatorListQuotes = creatorList.map(makeQuotes);

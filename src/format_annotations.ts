@@ -124,7 +124,7 @@ export function createFormatting(settings: ZoteroAnnotationsPluginSettings) {
     };
 }
 
-export function formatNoteElements(
+export function formatAnnotationElements(
     noteElements: AnnotationElements[],
     citeKey: string,
     settings: ZoteroAnnotationsPluginSettings,

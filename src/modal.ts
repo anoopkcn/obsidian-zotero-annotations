@@ -12,16 +12,16 @@ import {
     renderMatches,
 } from "obsidian";
 
-import { Reference, AnnotationElements } from "./types";
+import { Reference } from "./types";
 
 import {
-    getCreatorFullNames,
     getNoteTitle,
     orderByDateModified,
     resolvePath,
     truncate,
 } from "./utils";
 import { createNote, openNoteAfterImport } from "./notes";
+import { getCreatorFullNames } from "./format_creators";
 
 
 export class fuzzySelectReference extends FuzzySuggestModal<Reference> {

@@ -3,9 +3,6 @@ import * as fs from "fs";
 import { Reference, ZoteroAnnotationsPluginSettings } from "./types";
 import {
     createNotePath,
-    getCreatorFullInitials,
-    getCreatorFullNames,
-    getCreatorKey,
     getNoteTitle,
     importTemplate,
     insertKeywordList,
@@ -13,6 +10,7 @@ import {
     resolvePath
 } from "./utils";
 import { extractAnnotation, parseMetadata } from "./parser";
+import { getCreatorFullInitials, getCreatorFullNames, getCreatorKey } from "./format_creators";
 
 export function openNoteAfterImport(file: TFile, isOpen: boolean) {
     if (isOpen) this.app.workspace.getLeaf(false).openFile(file);

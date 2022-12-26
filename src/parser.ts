@@ -1,11 +1,6 @@
 import { AnnotationElements, ZoteroAnnotationsPluginSettings, Reference } from "./types";
 import {
     camelToNormalCase,
-    getCreatorKey,
-    getCreatorFullNames,
-    getCreatorFullInitials,
-    createCreatorAllList,
-    createCreatorList,
     getLocalFileLink,
     removeQuoteFromEnd,
     removeQuoteFromStart,
@@ -13,7 +8,14 @@ import {
     replaceTemplate,
     getZoteroAppInfo
 } from "./utils";
-import { formatNoteElements } from "./format";
+import { formatAnnotationElements } from "./format_annotations";
+import {
+    getCreatorFullInitials,
+    getCreatorFullNames,
+    getCreatorKey,
+    insertCreatorAllList,
+    insertCreatorList
+} from "./format_creators";
 
 export function getAnnotationType(
     annotationCommentFirstWord: string,
@@ -174,7 +176,7 @@ export function extractAnnotation(selectedEntry: Reference, noteTitleFull: strin
             concatNotes(note);
         }
         //Run the function to edit each line
-        const resultsLineElements = formatNoteElements(
+        const resultsLineElements = formatAnnotationElements(
             noteElements,
             selectedEntry.citationKey,
             settings,
@@ -214,7 +216,7 @@ export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotati
     //Create Note
     let note = template;
     //Replace the author/s
-    note = createCreatorList(
+    note = insertCreatorList(
         selectedEntry.creators,
         "author",
         note,
@@ -222,7 +224,7 @@ export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotati
         settings.nameFormat
     );
     //Replace the editor/s
-    note = createCreatorList(
+    note = insertCreatorList(
         selectedEntry.creators,
         "editor",
         note,
@@ -231,7 +233,7 @@ export function parseMetadata(selectedEntry: Reference, settings: ZoteroAnnotati
     );
 
     //Replace the creators (authors+editors+everybodyelse)
-    note = createCreatorAllList(
+    note = insertCreatorAllList(
         selectedEntry.creators,
         note,
         settings.multipleFieldsDivider,

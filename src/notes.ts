@@ -1,7 +1,7 @@
 //Solution copied from obsidian-bibnotes: https://github.com/stefanopagliari/bibnotes/blob/master/src/main.ts
 
 
-import { Notice, TFile } from "obsidian";
+import { Notice, TFile, WorkspaceLeaf } from "obsidian";
 import * as fs from "fs";
 import { Reference, ZoteroAnnotationsSettings } from "./types";
 import { extractAnnotation, parseMetadata } from "./parser";
@@ -16,7 +16,9 @@ import {
 } from "./utils";
 
 export function openNoteAfterImport(file: TFile, isOpen: boolean) {
-    if (isOpen) this.app.workspace.getLeaf(false).openFile(file);
+    let leaf: WorkspaceLeaf;
+    leaf = this.app.workspace.getLeaf(false);
+    if (isOpen) leaf.openFile(file);
 }
 
 export function compareOldNewNote(

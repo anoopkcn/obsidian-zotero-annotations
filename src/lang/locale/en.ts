@@ -5,12 +5,12 @@ export default {
   JSON_FILE_PATH_PLACEHOLDER: "path/to/zotero.json",
   IMPORT_NOTES_FOLDER: "Import Notes Folder",
   IMPORT_NOTES_FOLDER_DESC: "Add relative path from the vault folder to the folder where you want to import the notes.",
-  IMPORT_NOTES_FOLDER_PLACEHOLDER: "path/to/notes",
+  IMPORT_NOTES_FOLDER_PLACEHOLDER: "path/to/folder",
   NOTE_FILE_NAME: "Note File Name",
   NOTE_FILE_NAME_DESC:
     "Add the name of the note file. You can use the following placeholders:<br>" +
     "<code>{{citeKey}}</code>, <code>{{title}}</code>, <code>{{author}}</code>,<code>{{authorInitials}}</code>, <code>{{authorFullName}}</code> <code>{{year}}</code>",
-  NOTE_FILE_NAME_PLACEHOLDER: "<code>{{citeKey}}</code>",
+  NOTE_FILE_NAME_PLACEHOLDER: "{{citeKey}}",
   TEMPLATE_FILE: "Template File",
   TEMPLATE_FILE_DESC:
     "Add relative path from the vault folder to the template file <b>without</b> the file extension.<br>" +

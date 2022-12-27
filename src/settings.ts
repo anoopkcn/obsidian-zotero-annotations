@@ -292,6 +292,26 @@ export class SettingsTab extends PluginSettingTab {
         );
         if (settings.imagesImport) {
             new Setting(containerEl)
+                .setName(t("POSITION_OF_IMAGE_COMMENT"))
+                .setDesc(fragWithHTML(t("POSITION_OF_IMAGE_COMMENT_DESC")))
+                .addDropdown((d) => {
+                    d.addOption("Above the image", "Above the image");
+                    d.addOption("Below the image", "Below the image");
+                    //d.addOption("Import from Note", "Import from Note");
+                    d.setValue(settings.imagesCommentPosition);
+                    d.onChange(
+                        async (
+                            v: "Above the image" | "Below the image"
+                            //| "Import from Note"
+                        ) => {
+                            settings.imagesCommentPosition = v;
+                            await plugin.saveSettings();
+                            this.display();
+                        }
+                    );
+                });
+
+            new Setting(containerEl)
                 .setName(t("IMAGE_COPY"))
                 .setDesc(fragWithHTML(t("IMAGE_COPY_DESC")))
                 .addToggle((text) =>
@@ -317,26 +337,6 @@ export class SettingsTab extends PluginSettingTab {
                             })
                     );
             }
-
-            new Setting(containerEl)
-                .setName(t("POSITION_OF_IMAGE_COMMENT"))
-                .setDesc(fragWithHTML(t("POSITION_OF_IMAGE_COMMENT_DESC")))
-                .addDropdown((d) => {
-                    d.addOption("Above the image", "Above the image");
-                    d.addOption("Below the image", "Below the image");
-                    //d.addOption("Import from Note", "Import from Note");
-                    d.setValue(settings.imagesCommentPosition);
-                    d.onChange(
-                        async (
-                            v: "Above the image" | "Below the image"
-                            //| "Import from Note"
-                        ) => {
-                            settings.imagesCommentPosition = v;
-                            await plugin.saveSettings();
-                            this.display();
-                        }
-                    );
-                });
 
             new Setting(containerEl)
                 .setName(t("ZOTERO_LOCAL_FOLDER"))

@@ -1,5 +1,4 @@
-//Solution copied from obsidian-bibnotes: https://github.com/stefanopagliari/bibnotes/blob/master/src/main.ts
-
+//Solution copied and modified from obsidian-bibnotes: https://github.com/stefanopagliari/bibnotes/blob/master/src/main.ts
 
 import { Notice, TFile, WorkspaceLeaf } from "obsidian";
 import * as fs from "fs";

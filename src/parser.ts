@@ -166,7 +166,6 @@ export function extractAnnotation(
     }
 
     if (selectedEntry.notes.length > 0) {
-
         // cincatinate notes and annotations from multiple files for the same reference
         if (settings.importAllAnnotationFiles) {
             for (indexNote = 0; indexNote < selectedEntry.notes.length; indexNote++) {
@@ -187,7 +186,6 @@ export function extractAnnotation(
         );
 
         keywordArray = resultsLineElements.keywordArray;
-
         //Create the annotation by merging the individial elements of rowEditedArray. Do the same for the colour
         extractedAnnotations =
             resultsLineElements.rowEditedArray.join("\n");
@@ -260,15 +258,12 @@ export function parseMetadata(
 
     //Fix itemType
     selectedEntry.itemType = camelToNormalCase(selectedEntry.itemType);
-
     // Create in-line citation (e.g. Collier, Laporte and Seawright (2009))
     selectedEntry.citationInLine = `${getCreatorKey(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLine = selectedEntry.citationInLine.replace("()", "");
-
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
     selectedEntry.citationInLineInitials = `${getCreatorFullInitials(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLineInitials = selectedEntry.citationInLineInitials.replace("()", "");
-
     // Create in-line citation with initials (e.g. Collier, D., Laporte, J. and Seawright, J. (2009))
     selectedEntry.citationInLineFullName = `${getCreatorFullNames(selectedEntry.creators)} (${selectedEntry.year})`;
     selectedEntry.citationInLineFullName = selectedEntry.citationInLineFullName.replace("()", "");
@@ -277,7 +272,6 @@ export function parseMetadata(
     if (selectedEntry.itemType == "Journal Article") {
         selectedEntry.citationShort = `${selectedEntry.citationInLine} '${selectedEntry.title}'`;
         selectedEntry.citationFull = `${selectedEntry.citationShort}, *${selectedEntry.publicationTitle}*, ${selectedEntry.volume}(${selectedEntry.issue}), pp. ${selectedEntry.pages}.`;
-
         selectedEntry.citationFull = selectedEntry.citationFull.replace("() ", "");
         selectedEntry.citationShort = selectedEntry.citationShort.replace("** ", "");
         selectedEntry.citationFull = selectedEntry.citationFull.replace("** ", "");
@@ -289,15 +283,12 @@ export function parseMetadata(
     selectedEntry.file = getLocalFileLink(selectedEntry);
     // Create an array with all the fields
     const entriesArray = Object.keys(selectedEntry);
-
     //replace the single-value placeholders with the value of the field
     note = replaceAllTemplates(entriesArray, note, selectedEntry);
-
     //remove single backticks but retain triple backticks
     note = note.replace(/```/g, "HEREISAPLACEHOLDERFORBACKTICK");
     note = note.replace(/`/g, "'");
     note = note.replace(/HEREISAPLACEHOLDERFORBACKTICK/g, "```");
-
     // //if the abstract is missing, delete Abstract headings
     // Return the metadata
     return note;
@@ -314,12 +305,9 @@ export function parseAnnotationLinesintoElementsZotfile(
     for (let indexLines = 0; indexLines < lines.length; indexLines++) {
         //Remote html tags
         const selectedLineOriginal = lines[indexLines];
-
         const selectedLine = selectedLineOriginal.replace(/<\/?[^>]+(>|$)/g, "");
-
         //Skip if empty
         if (selectedLine === "") continue;
-
         //Crety empty lineElements
         //@ts-ignore
         const lineElements: AnnotationElements = {
@@ -354,7 +342,6 @@ export function parseAnnotationLinesintoElementsZotfile(
         }
 
         const posCiteKeyBegins = selectedLine.indexOf(lineElements.citeKey);
-
         let extractedText = "";
         if (posCiteKeyBegins !== -1) {
             extractedText = selectedLine
@@ -464,10 +451,8 @@ export function parseAnnotationLinesintoElementsUserNote(note: string) {
     const lengthLines = Object.keys(lines).length;
     for (let indexLines = 0; indexLines < lengthLines; indexLines++) {
         const selectedLineOriginal = unescape(lines[indexLines]);
-
         // Replace backticks with single quote
         let selectedLine = replaceTemplate(selectedLineOriginal, "`", "'");
-
         // Correct encoding issues with special character showing incorrectly
         selectedLine = replaceTemplate(selectedLine, "&amp;", "&")
             .replace(/&lt;/g, "<")
@@ -508,9 +493,7 @@ export function parseAnnotationLinesintoElementsUserNote(note: string) {
         };
 
         lineElements.rowEdited = selectedLine;
-
         //Add the element to the array containing all the elements
-
         noteElements.push(lineElements);
     }
 
@@ -568,7 +551,6 @@ export function parseAnnotationLinesintoElementsZotero(
 
         //Record the extraction method
         lineElements.extractionSource = "zotero";
-
         //Identify images
         if (/data-attachment-key=/gm.test(selectedLineOriginal)) {
             lineElements.annotationType = "typeImage";
@@ -576,7 +558,6 @@ export function parseAnnotationLinesintoElementsZotero(
                 .replaceAll('"', "")
                 .replace("key=", "");
         }
-
         //Extract the colour of the highlight
         if (/"color":"#......"/gm.test(selectedLineOriginal)) {
             let highlightColour = String(selectedLineOriginal.match(/"color":"#......"/gm));
@@ -585,7 +566,6 @@ export function parseAnnotationLinesintoElementsZotero(
             highlightColour = highlightColour.replace('"', "");
             lineElements.highlightColour = highlightColour;
         }
-
         // Extract the location of the annotation in the PDF
         // "locator":"12345"
         if (/"locator":"\d+"/gm.test(selectedLineOriginal)) {

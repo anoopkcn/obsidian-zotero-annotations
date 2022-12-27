@@ -1,7 +1,6 @@
 import { Creator, CreatorArray } from "./types";
 import { getInitials, makeQuotes, makeWiki, replaceTemplate } from "./utils";
 
-
 export const getCreatorKey = (creators: CreatorArray) => {
     const authorKey: string[] = [];
     const editorKey: string[] = [];

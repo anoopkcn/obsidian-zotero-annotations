@@ -159,25 +159,21 @@ export function replaceMissingFields(
 
 export function getLocalFileLink(reference: Reference) {
     //if there is no attachment, return placeholder
-    if (reference.attachments.length == 0) return "{{localFile}}";
+    const len_attachments = reference.attachments.length;
+    if (len_attachments == 0) return "{{localFile}}";
     const filesList: string[] = [];
 
     for (
-        let attachmentindex = 0;
-        attachmentindex < reference.attachments.length;
-        attachmentindex++
-    ) {
-        if (reference.attachments[attachmentindex].itemType !== "attachment")
-            continue;
-
+        let index = 0; index < len_attachments; index++) {
+        if (reference.attachments[index].itemType !== "attachment") continue;
         //remove white spaces from file name
-        if (reference.attachments[attachmentindex].path == undefined) {
-            reference.attachments[attachmentindex].path = "";
+        if (reference.attachments[index].path == undefined) {
+            reference.attachments[index].path = "";
         }
 
         const selectedfile: string =
-            "[" + reference.attachments[attachmentindex].title + "](file:///" +
-            encodeURI(reference.attachments[attachmentindex].path.replaceAll(" ", " ")) + ")"; 
+            "[" + reference.attachments[index].title + "](file:///" +
+            encodeURI(reference.attachments[index].path.replaceAll(" ", " ")) + ")"; 
 
         filesList.push(selectedfile);
     }
@@ -208,10 +204,7 @@ export function getNoteTitle(
     return exportTitle;
 }
 
-export function createNotePath(
-    noteTitle: string,
-    exportPath: string
-) {
+export function createNotePath(noteTitle: string, exportPath: string) {
     return resolvePath(`${exportPath}/${noteTitle}.md`)
 }
 
@@ -296,7 +289,6 @@ export function getZoteroAppInfo(
         //first look into the same path as the pdf attachment
         let pathZoteroStorage = "";
         let zoteroBuildWindows: boolean = undefined;
-
         //check if the base path where the attachment is stored is in Zotero/storage
         const zoteroStorageMac = new RegExp(/.+?(?=Zotero\/storage)Zotero\/storage\//gm);
 

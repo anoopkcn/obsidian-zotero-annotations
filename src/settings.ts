@@ -15,9 +15,6 @@ export class SettingsTab extends PluginSettingTab {
         const { settings } = plugin;
 
         containerEl.empty();
-
-        // containerEl.createEl("h1", { text: "Zotero Annotations " });
-
         containerEl.createEl("h2", { text: "General Settings" });
         new Setting(containerEl)
             .setName(t("JSON_FILE_PATH"))
@@ -58,7 +55,6 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        // containerEl.createEl("h2", { text: "Template" });
         new Setting(containerEl)
             .setName(t("TEMPLATE_FILE"))
             .setDesc(fragWithHTML(t("TEMPLATE_FILE_DESC")))
@@ -134,7 +130,6 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        // containerEl.createEl("h2", { text: "In-text citations" });
         new Setting(containerEl)
             .setName(t("CREATE_BACKLINKS"))
             .setDesc(fragWithHTML(t("CREATE_BACKLINKS_DESC")))

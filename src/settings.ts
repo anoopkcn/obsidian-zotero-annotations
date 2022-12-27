@@ -1,5 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import ZoteroAnnotations from "./main";
+import { t } from "./lang/helpers";
+import { fragWithHTML } from "./utils";
 
 export class SettingsTab extends PluginSettingTab {
     plugin: ZoteroAnnotations;
@@ -18,30 +20,24 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "General Settings" });
         new Setting(containerEl)
-            .setName("JSON File")
-            .setDesc(
-                "Add relative path from the vault folder to the BetterBibTeX JSON file."
-            )
+            .setName(t("JSON_FILE_PATH"))
+            .setDesc(fragWithHTML(t("JSON_FILE_PATH_DESC")))
             .addText((text) =>
                 text
-                    .setPlaceholder("/path/to/BetterBibTex.json")
+                    .setPlaceholder(t("JSON_FILE_PATH_PLACEHOLDER"))
                     .setValue(settings.bibPath)
                     .onChange(async (value) => {
                         settings.bibPath = value;
                         await plugin.saveSettings();
                     })
-            );
-
-        // containerEl.createEl("h2", { text: "Import Notes" });
+        );
 
         new Setting(containerEl)
-            .setName("Import Notes Folder")
-            .setDesc(
-                "Add the relative path to the folder inside your vault where the notes will be imported"
-            )
+            .setName(t("IMPORT_NOTES_FOLDER"))
+            .setDesc(fragWithHTML(t("IMPORT_NOTES_FOLDER_DESC")))
             .addText((text) =>
                 text
-                    .setPlaceholder("/path/to/folder")
+                    .setPlaceholder(t("IMPORT_NOTES_FOLDER_PLACEHOLDER"))
                     .setValue(settings.importPath)
                     .onChange(async (value) => {
                         settings.importPath = value;
@@ -50,13 +46,11 @@ export class SettingsTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Note File Name")
-            .setDesc(
-                "Select the format of the note file name. Possible values include: {{citeKey}}, {{title}}, {{author}},{{authorInitials}}, {{authorFullName}} {{year}}"
-            )
+            .setName(t("NOTE_FILE_NAME"))
+            .setDesc(fragWithHTML(t("NOTE_FILE_NAME_DESC")))
             .addText((text) =>
                 text
-                    .setPlaceholder("@{{citeKey}}")
+                    .setPlaceholder(t("NOTE_FILE_NAME_PLACEHOLDER"))
                     .setValue(settings.importFileName)
                     .onChange(async (value) => {
                         settings.importFileName = value;
@@ -66,13 +60,11 @@ export class SettingsTab extends PluginSettingTab {
 
         // containerEl.createEl("h2", { text: "Template" });
         new Setting(containerEl)
-            .setName("Template File")
-            .setDesc(
-                "Add relative path from the vault folder to the template file without .md extension. If no template is specified, the default template will be used."
-            )
+            .setName(t("TEMPLATE_FILE"))
+            .setDesc(fragWithHTML(t("TEMPLATE_FILE_DESC")))
             .addText((text) =>
                 text
-                    .setPlaceholder("Templates/annotations")
+                    .setPlaceholder(t("TEMPLATE_FILE_PLACEHOLDER"))
                     .setValue(settings.templatePath)
                     .onChange(async (value) => {
                         settings.templatePath = value;
@@ -82,10 +74,8 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "Notes Import Settings" });
         new Setting(containerEl)
-            .setName("Missing Fields")
-            .setDesc(
-                "Fields that are present in the template but missing from the selected field."
-            )
+            .setName(t("MISSING_FIELDS"))
+            .setDesc(fragWithHTML(t("MISSING_FIELDS_DESC")))
             .addDropdown((d) => {
                 d.addOption("Leave placeholder", "Leave placeholder");
                 d.addOption("Remove (entire row)", "Remove (entire row)");
@@ -109,7 +99,7 @@ export class SettingsTab extends PluginSettingTab {
             });
         if (settings.missingfield === "Replace with custom text") {
             new Setting(containerEl)
-                .setName("Custom text replacement for missing fields")
+                .setName(t("REPLACE_MISSING_FIELDS"))
                 .addText((text) =>
                     text
                         .setValue(settings.missingfieldreplacement)
@@ -121,10 +111,8 @@ export class SettingsTab extends PluginSettingTab {
         }
 
         new Setting(containerEl)
-            .setName("Format Names")
-            .setDesc(
-                "Specify how the names of the authors/editors should be imported. Accepted values are {{firstName}}, {{lastName}} and {{firstNameInitials}}"
-            )
+            .setName(t("FORMAT_CREATOR_NAMES"))
+            .setDesc(fragWithHTML(t("FORMAT_CREATOR_NAMES_DESC")))
             .addText((text) =>
                 text.setValue(settings.nameFormat).onChange(async (value) => {
                     settings.nameFormat = value;
@@ -134,10 +122,8 @@ export class SettingsTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Multiple Entries Delimiter")
-            .setDesc(
-                "Type the character or expression that should separate multiple values when found in the same field such as  authors, editors, tags, collections, etc."
-            )
+            .setName(t("MULTIPLE_ENTRIES_DELIMITER"))
+            .setDesc(fragWithHTML(t("MULTIPLE_ENTRIES_DELIMITER_DESC")))
             .addText((text) =>
                 text
                     .setPlaceholder(",")
@@ -150,10 +136,8 @@ export class SettingsTab extends PluginSettingTab {
 
         // containerEl.createEl("h2", { text: "In-text citations" });
         new Setting(containerEl)
-            .setName("Create Link to the Highlight Page in the PDF")
-            .setDesc(
-                "If enabled, a link will be created at the end of the extracted highlights or figures to the original page of the PDF in the Zotero reader"
-            )
+            .setName(t("CREATE_BACKLINKS"))
+            .setDesc(fragWithHTML(t("CREATE_BACKLINKS_DESC")))
             .addToggle((text) =>
                 text
                     .setValue(settings.highlightCitationsLink)
@@ -166,10 +150,8 @@ export class SettingsTab extends PluginSettingTab {
 
         if (settings.highlightCitationsLink) {
             new Setting(containerEl)
-                .setName("Format of Zotero Backlinks")
-                .setDesc(
-                    "Select the style of the reference added next to the highlights and figures extracted from the PDF. This feature is for now available only for sources extracted from Zotero"
-                )
+                .setName(t("FORMAT_BACKLINKS"))
+                .setDesc(fragWithHTML(t("FORMAT_BACKLINKS_DESC")))
                 .addDropdown((d) => {
                     d.addOption(
                         "Author, year, page number",
@@ -195,8 +177,8 @@ export class SettingsTab extends PluginSettingTab {
         }
 
         new Setting(containerEl)
-            .setName("Structure of the extracted highlights/comments/tag")
-            .setDesc("Placeholder include {{highlight}}, {{comment}}, {{tag}}")
+            .setName(t("ORDER_OF_EXTRACTED_ELEMENT"))
+            .setDesc(fragWithHTML(t("ORDER_OF_EXTRACTED_ELEMENT_DESC")))
             .addTextArea((text) =>
                 text
                     .setValue(settings.highlightExportTemplate)
@@ -207,10 +189,8 @@ export class SettingsTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Multiple Annotaion Files")
-            .setDesc(
-                "Select whether to import all annotation files associated with a reference or the latest note. Toggle On: Import All notes"
-            )
+            .setName(t("MULTIPLE_ANNOTATION_FILES"))
+            .setDesc(fragWithHTML(t("MULTIPLE_ANNOTATION_FILES_DESC")))
             .addToggle((t) =>
                 t
                     .setValue(settings.importAllAnnotationFiles)
@@ -223,12 +203,9 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.createEl("h2", { text: "Notes Update Settings" });
         new Setting(containerEl)
-            .setName("Note Update Preservation")
-            .setDesc(
-                'Select "Overwrite Entire Note" to overwrite the note on update. No manual edits from before is preserved. "Select Section" will preserve sections that are inside the selected sections and overwrite everything outside the sections.'
-            )
+            .setName(t("NOTE_UPDATE_PRESERVATION"))
+            .setDesc(fragWithHTML(t("NOTE_UPDATE_PRESERVATION_DESC")))
             .addDropdown((d) => {
-                // d.addOption("Save Entire Note", "Save Entire Note");
                 d.addOption("Select Section", "Select Section");
                 d.addOption("Overwrite Entire Note", "Overwrite Entire Note");
                 d.setValue(settings.saveManualEdits);
@@ -246,10 +223,8 @@ export class SettingsTab extends PluginSettingTab {
 
         if (settings.saveManualEdits == "Select Section") {
             new Setting(containerEl)
-                .setName("Overwrite Safe Zone Start")
-                .setDesc(
-                    "Define string (e.g. '## Notes') in the template starting from where updating the note will not overwrite the existing text. If field is left empty, the value will be set to the beginning of the note"
-                )
+                .setName(t("PRESERVATION_SECTION_START"))
+                .setDesc(fragWithHTML(t("PRESERVATION_SECTION_START_DESC")))
                 .addText((text) =>
                     text
                         .setValue(settings.saveManualEditsStart)
@@ -261,10 +236,8 @@ export class SettingsTab extends PluginSettingTab {
 
             if (settings.saveManualEdits) {
                 new Setting(containerEl)
-                    .setName("Overwrite Safe Zone End")
-                    .setDesc(
-                        "Define string (e.g. '## Notes') in the template until where updating the note will not overwrite the existing text. If field is left empty, the value will be set to the end of the note"
-                    )
+                    .setName(t("PRESERVATION_SECTION_END"))
+                    .setDesc(fragWithHTML(t("PRESERVATION_SECTION_END_DESC")))
                     .addText((text) =>
                         text
                             .setValue(settings.saveManualEditsEnd)
@@ -275,12 +248,9 @@ export class SettingsTab extends PluginSettingTab {
                     );
             }
         }
-        // containerEl.createEl("h2", { text: "Open After import" });
         new Setting(containerEl)
-            .setName("Open the updated note")
-            .setDesc(
-                "Select whether to open note in the current view after updating note. This option will not affect when updating all notes at once. Toggle On: Open the updated note"
-            )
+            .setName(t("OPEN_UPDATED_NOTE"))
+            .setDesc(fragWithHTML(t("OPEN_UPDATED_NOTE_DESC")))
             .addToggle((t) =>
                 t
                     .setValue(settings.openAfterImport)
@@ -291,12 +261,9 @@ export class SettingsTab extends PluginSettingTab {
                     })
             );
 
-        // containerEl.createEl("h2", { text: "Update Notes" });
         new Setting(containerEl)
-            .setName("Update Existing/All Notes")
-            .setDesc(
-                "Select whether to create new notes that are missing from Obsidian but present/modified within Zotero when runing the Update Notes command"
-            )
+            .setName(t("UPDATE_ALL_NOTES"))
+            .setDesc(fragWithHTML(t("UPDATE_ALL_NOTES_DESC")))
             .addDropdown((d) => {
                 d.addOption("Only existing notes", "Only existing notes");
                 d.addOption("Create when missing", "Create when missing");
@@ -314,37 +281,19 @@ export class SettingsTab extends PluginSettingTab {
         containerEl.createEl("h2", { text: "Images Settings" });
 
         new Setting(containerEl)
-            .setName("Import Images")
-            .setDesc(
-                "This option is available only for notes extracted using the Zotero native PDF reader"
-            )
+            .setName(t("EMBED_IMAGES"))
+            .setDesc(fragWithHTML(t("EMBED_IMAGES_DESC")))
             .addToggle((text) =>
                 text.setValue(settings.imagesImport).onChange(async (value) => {
                     settings.imagesImport = value;
                     await plugin.saveSettings();
                     this.display();
                 })
-            );
-        new Setting(containerEl)
-            .setName("Zotero Local Folder")
-            .setDesc(
-                `Add the path on your computer where Zotero's data is stored (e.g. "/Users/yourusername/Zotero/storage"). This field is required only when this is different from the folder where the PDF files are stored. To retrieve this information, open Zotero --> Preferences --> Advanced --> Files and Folder, and copy the "data directory location", followed by the subdirectory "/storage"`
-            )
-            .addText((text) =>
-                text
-                    .setValue(settings.zoteroStoragePathManual)
-                    .onChange(async (value) => {
-                        settings.zoteroStoragePathManual = value;
-                        await plugin.saveSettings();
-                    })
-            );
-
+        );
         if (settings.imagesImport) {
             new Setting(containerEl)
-                .setName("Copy the Image into the Obsidian Vault")
-                .setDesc(
-                    "If this option is selected, images selected through the Zotero reader will be copied into the Vault. If this option is not selected, the note will link to the file stored in Zotero/storage"
-                )
+                .setName(t("IMAGE_COPY"))
+                .setDesc(fragWithHTML(t("IMAGE_COPY_DESC")))
                 .addToggle((text) =>
                     text
                         .setValue(settings.imagesCopy)
@@ -356,10 +305,8 @@ export class SettingsTab extends PluginSettingTab {
                 );
             if (settings.imagesCopy) {
                 new Setting(containerEl)
-                    .setName("Image Import Path")
-                    .setDesc(
-                        "Add the relative path to the folder inside your vault where the image will be copied"
-                    )
+                    .setName(t("IMAGE_COPY_PATH"))
+                    .setDesc(fragWithHTML(t("IMAGE_COPY_PATH_DESC")))
                     .addText((text) =>
                         text
                             .setPlaceholder("/path/to/folder")
@@ -372,8 +319,8 @@ export class SettingsTab extends PluginSettingTab {
             }
 
             new Setting(containerEl)
-                .setName("Position of Comment to an Image")
-                //.setDesc("")
+                .setName(t("POSITION_OF_IMAGE_COMMENT"))
+                .setDesc(fragWithHTML(t("POSITION_OF_IMAGE_COMMENT_DESC")))
                 .addDropdown((d) => {
                     d.addOption("Above the image", "Above the image");
                     d.addOption("Below the image", "Below the image");
@@ -390,6 +337,19 @@ export class SettingsTab extends PluginSettingTab {
                         }
                     );
                 });
+
+            new Setting(containerEl)
+                .setName(t("ZOTERO_LOCAL_FOLDER"))
+                .setDesc(fragWithHTML(t("ZOTERO_LOCAL_FOLDER_DESC")))
+                .addText((text) =>
+                    text
+                        .setValue(settings.zoteroStoragePathManual)
+                        .onChange(async (value) => {
+                            settings.zoteroStoragePathManual = value;
+                            await plugin.saveSettings();
+                        })
+                );
+
         }
     }
 }

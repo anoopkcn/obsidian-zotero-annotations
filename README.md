@@ -13,7 +13,7 @@ The plugin is not available in the community plugin section in Obsidian. So you 
 2. Copy the `obsidian-zotero-annotations` folder to your vault's `.obsidian/plugins` folder.
 3. Reload Obsidian.
 
-You can also use the [BRAT](https://github.com/TfTHacker/obsidian42-brat/) plugin to install this plugin.
+You can also use the [BRAT](https://github.com/TfTHacker/obsidian42-brat/) plugin to install the latest release.
 
 ## Features
 The plugin provides two commands:

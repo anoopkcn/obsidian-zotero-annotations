@@ -44,6 +44,10 @@ If you wish to change the default style, you can make a custom CSS(Obsidian sett
 ```
 </details>
 
+## Upcoming Features
+- [ ] Command to insert reference ID and other metadata in a markdown note (can be used for [Reference Map plugin](https://github.com/anoopkcn/obsidian-reference-map))
+- [ ] Command to cherry pick annotations from Zotero and insert it to current note
+
 ## Settings
 By default, annotations are created with a plain template. You can provide a custom template by providing the path to the template using the `Template File` option in the settings. 
 

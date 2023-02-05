@@ -1,7 +1,7 @@
 # Zotero Annotations
 Import PDF annotation notes and metadata from Zotero to Obsidian.
 
-**This Plugin is not actively developed, for official plugins please check the end of this document. I would recomend using [mgmeyers/obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration)**
+**[DEPRECATED]This Plugin is not actively developed, for official plugins please check the end of this document. I would recomend using [mgmeyers/obsidian-zotero-integration](https://github.com/mgmeyers/obsidian-zotero-integration)**
 
 ## Requirements
 - [Zotero](https://www.zotero.org/) `v6.x` with [Better BibTeX](https://retorque.re/zotero-better-bibtex/) plugin installed.
